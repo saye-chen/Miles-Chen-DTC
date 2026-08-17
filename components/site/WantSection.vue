@@ -16,6 +16,14 @@ const copy = computed(() => language.value === 'zh' ? {
 
 <template>
   <section class="want-section section-frame" data-act="05" aria-labelledby="want-title">
+    <div class="want-visual" aria-hidden="true">
+      <SitePicture
+        src="/images/journey/pexels-act05-black-lingerie-v1.png"
+        alt=""
+        sizes="100vw"
+        img-class="want-visual-img"
+      />
+    </div>
     <div class="want-object">
       <div class="object-halo" aria-hidden="true"></div>
       <div class="object-glow" aria-hidden="true"></div>
