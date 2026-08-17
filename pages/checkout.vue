@@ -35,6 +35,7 @@ usePageMeta(() => ({
         <span class="t-line" v-for="(ln, i) in copy.title.split('\n')" :key="i">{{ ln }}</span>
       </h1>
       <p class="page-lead">{{ copy.note }}</p>
+      <div class="checkout-atmosphere" aria-hidden="true"></div>
 
       <form v-if="!submitted" class="demo-form" @submit.prevent="submitted = true">
         <label>{{ copy.name }}

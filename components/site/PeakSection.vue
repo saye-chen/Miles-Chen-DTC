@@ -8,11 +8,11 @@ const copy = computed(() => language.value === 'zh' ? {
   hint: '左右移动，拨动节奏',
   hold: '按住，感受温热',
 } : {
-  eyebrow: '04 / Feel the rhythm',
-  title: 'Slow down,\nyour body follows.',
-  body: 'The rhythm finds its own pace.',
+  eyebrow: '04 / Stay with the feeling',
+  title: 'Slow is not soft.',
+  body: 'Pressure. Release. Again.',
   hint: 'Move across the rhythm',
-  hold: 'Hold — feel the warmth',
+  hold: 'Don’t stop now',
 })
 
 /** 对称声波：21 根，中间最高、向两侧渐低（--wave-index 越大越高） */
@@ -82,6 +82,14 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="peak-section" data-act="04" aria-labelledby="peak-title">
+    <div class="peak-visual" aria-hidden="true">
+      <SitePicture
+        src="/images/journey/skin-rhythm-v1.png"
+        alt=""
+        sizes="100vw"
+        img-class="peak-visual-img"
+      />
+    </div>
     <div class="peak-copy" data-reveal>
       <p class="eyebrow">{{ copy.eyebrow }}</p>
       <h2 id="peak-title" class="art-title">

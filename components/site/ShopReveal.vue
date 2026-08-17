@@ -11,9 +11,9 @@ const copy = computed(() => language.value === 'zh' ? {
   note: '演示内容 · 商品事实、价格与库存待确认。',
 } : {
   eyebrow: '06 / Enter',
-  title: 'Let it\nfind you.',
-  description: 'At the end of the dark, there is a door. It has been waiting.',
-  cta: 'Enter the objects',
+  title: 'Take the feeling\nwith you.',
+  description: 'You know what comes next.',
+  cta: 'Enter the collection',
   cta2: 'Read a note',
   label: 'CONCEPTUAL / 概念演示',
   note: 'Demo content · product facts, price and availability pending confirmation.',
@@ -39,8 +39,8 @@ const copy = computed(() => language.value === 'zh' ? {
     <!-- 右：门扉 —— 材质影像作为"黑暗尽头的一扇门"，出血到视口右缘 -->
     <div class="shop-visual" data-reveal>
       <SitePicture
-        src="/images/journey/silk-object-detail-wide.png"
-        :alt="language === 'zh' ? '柔软材质与铜色光线的概念演示影像' : 'Conceptual material study in copper light'"
+        src="/images/journey/pexels-six-afterglow-v1.png"
+        :alt="language === 'zh' ? '暗铜色调下，成年模特的肩背、腰线与蕾丝身体轮廓' : 'An adult fashion model’s shoulders, waist and lace silhouette in dark copper light'"
         sizes="(max-width: 700px) 92vw, 52vw"
         parallax="0.06"
         img-class="shop-material-img"

@@ -63,7 +63,7 @@ usePageMeta(() => ({
       <div class="catalog-grid">
         <article v-for="product in filtered" :key="product.id" class="catalog-card">
           <NuxtLink :to="`/product/${product.slug}`">
-            <div class="catalog-image">
+            <div class="catalog-image" :class="`catalog-image--${product.category}`">
               <SitePicture
                 :src="product.image"
                 :alt="product.name"

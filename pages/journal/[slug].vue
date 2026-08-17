@@ -31,6 +31,7 @@ usePageMeta(() => ({
       <h1 class="art-title page-title">
         <span class="t-line" v-for="(ln, i) in copy.title.split('\n')" :key="i">{{ ln }}</span>
       </h1>
+      <div class="article-atmosphere" aria-hidden="true"></div>
       <p class="article-body">{{ copy.body }}</p>
       <NuxtLink class="back-link" to="/journal">← {{ copy.back }}</NuxtLink>
     </main>

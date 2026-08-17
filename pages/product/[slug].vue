@@ -58,7 +58,7 @@ function addToBag() {
   <div class="inner-page">
     <SiteHeader />
     <main class="product-page section-frame">
-      <div class="product-detail-visual">
+      <div class="product-detail-visual" :class="`product-detail-visual--${product.slug}`">
         <SitePicture :src="product.image" :alt="product.name" sizes="(max-width: 960px) 92vw, 52vw" />
       </div>
       <div class="product-detail-copy">

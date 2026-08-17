@@ -7,9 +7,9 @@ const copy = computed(() => language.value === 'zh' ? {
   body: '渴望不需要理由。它只需要被承认。',
   lens: '渴望 / DESIRE',
 } : {
-  eyebrow: '05 / Desire rises',
-  title: 'Now,\nyou want it.',
-  body: 'Desire needs no reason. It only asks to be admitted.',
+  eyebrow: '05 / You want more',
+  title: 'You want\nmore.',
+  body: 'The wanting is the point.',
   lens: 'DESIRE',
 })
 </script>

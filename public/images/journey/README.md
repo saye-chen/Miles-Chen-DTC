@@ -6,6 +6,9 @@
 | --- | --- | --- |
 | `hero-v2.png` | Desire Hero 首屏全幅影像（Act 01 暗下来） | `demo: true`, `dataStatus: "fictional"` |
 | `touch-v2.png` | Body Touch 第二幕材质与体温近景（Act 02 看见体温） | `demo: true`, `dataStatus: "fictional"` |
+| `skin-touch-v2.png` | Body Touch 第二幕皮肤与手部触碰主视觉（Act 02 看见体温） | `demo: true`, `dataStatus: "fictional"` |
+| `skin-afterglow-v1.png` | Shop 第六幕高潮余韵与进入主视觉（Act 06 进入） | `demo: true`, `dataStatus: "fictional"` |
+| `pexels-six-afterglow-v1.png` | Shop 第六幕时尚人体主视觉（Pexels 17101140，已裁切调色） | `external: Pexels`, `license: verify before production` |
 | `scene-touch-v2.png` | Desire Scenes 第三幕触碰近景（Act 03 发生触碰） | `demo: true`, `dataStatus: "fictional"` |
 | `hero-touch-film.png` | Want 第五幕欲望之核圆形影像（CSS 背景） | `demo: true`, `dataStatus: "fictional"` |
 | `silk-object-detail.png` | Shop 第六幕材质主视觉（Act 06 进入） | `demo: true`, `dataStatus: "fictional"` |

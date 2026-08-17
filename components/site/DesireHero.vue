@@ -9,8 +9,8 @@ const label = computed(() => language.value === 'zh' ? {
   scroll: '继续向下',
 } : {
   eyebrow: '01 / Let the dark fall',
-  cta: 'Descend into the dark',
-  cta2: 'Explore the objects',
+  cta: 'Give in',
+  cta2: 'See what’s waiting',
   scroll: 'Keep going',
 })
 

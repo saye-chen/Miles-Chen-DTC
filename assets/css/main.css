@@ -252,6 +252,15 @@ main:focus { outline: none; }
     radial-gradient(120% 85% at 72% 18%, rgba(126, 47, 46, .16), transparent 62%);
   pointer-events: none;
 }
+/* 移动端标题区域单独保留一层局部暗部：不压低整张影像，只让主句从身体高光里浮出来 */
+.hero-copy::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -18% -14% -22% -10%;
+  background: radial-gradient(ellipse at 42% 54%, rgba(18, 8, 12, .24), transparent 72%);
+  pointer-events: none;
+}
 /* 触碰机制：光线被指针吸引（--pointer-x/y），按下/触摸时 --heat 升高变暖，移开后余温衰减 */
 .hero-visual::before {
   content: ""; position: absolute; inset: 0; z-index: 1;
@@ -326,6 +335,7 @@ main:focus { outline: none; }
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
+.want-copy h2::first-line { letter-spacing: -.045em; }
 .touch-copy > p:last-child, .want-copy > p:not(.eyebrow),
 .relationship-heading > p:last-child, .peak-body {
   max-width: 30ch;
@@ -381,9 +391,15 @@ main:focus { outline: none; }
   border-radius: 0;
   box-shadow: none;
   overflow: hidden;
-  background: var(--wine);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 26%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 26%);
+  background: transparent;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, #000 26%, #000 92%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 26%, #000 92%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-composite: intersect;
 }
 /* 文案列：纵向居中，站在左侧暗部之上 */
 .touch-copy {
@@ -393,7 +409,7 @@ main:focus { outline: none; }
   display: flex; flex-direction: column; justify-content: center;
   padding-top: clamp(8px, 1vh, 16px);
 }
-.touch-lens img { min-height: 100%; opacity: .94; object-position: 50% 42%; filter: saturate(.92) contrast(1.16) brightness(1.08); }
+.touch-lens img { min-height: 100%; opacity: .9; object-position: 50% 42%; filter: saturate(.82) contrast(1.14) brightness(1.03) sepia(.08); }
 /* 热源光斑：指针靠近时体温光跟随（--pointer-x/y），按下/触摸升温（--heat），
    与首页触碰机制同款；无指针时保持中央缓慢呼吸 */
 .touch-lens::before {
@@ -688,6 +704,23 @@ main:focus { outline: none; }
     radial-gradient(58% 44% at 50% 82%, var(--heat-2), transparent 70%),
     radial-gradient(36% 30% at 50% 94%, var(--heat-4), transparent 72%);
 }
+.peak-visual {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden;
+  opacity: .54;
+  mix-blend-mode: screen;
+}
+.peak-visual::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(22, 16, 19, .84), rgba(22, 16, 19, .18) 42%, rgba(22, 16, 19, .9)),
+    linear-gradient(90deg, rgba(22, 16, 19, .82), transparent 52%, rgba(22, 16, 19, .34));
+}
+.peak-visual-img {
+  width: 100%; height: 100%; object-fit: cover;
+  object-position: 58% 48%;
+  filter: saturate(.76) contrast(1.12) brightness(.78) sepia(.08);
+}
 .peak-copy {
   position: relative; z-index: 1;
   max-width: 640px;
@@ -829,20 +862,32 @@ main:focus { outline: none; }
   border-radius: 0;
   box-shadow: none;
   overflow: hidden;
-  background: var(--wine);
+  background: transparent;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, #000 17%, #000 78%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, #000 11%, #000 88%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 17%, #000 78%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, #000 11%, #000 88%, transparent 100%);
+  mask-composite: intersect;
 }
 /* 材质主视觉：真实质感底层（概念演示素材）+ 底部渐变压暗保证标签可读 */
 .shop-material-img {
   width: 100%; height: 100%; object-fit: cover;
-  object-position: 50% 42%;
-  mix-blend-mode: screen; opacity: .92;
-  filter: saturate(.9) contrast(1.16) brightness(1.06);
+  object-position: 58% 46%;
+  mix-blend-mode: normal; opacity: .84;
+  filter: saturate(.78) contrast(1.16) brightness(.94) sepia(.12);
   transition: transform 1.2s var(--ease);
 }
 .shop-visual:hover .shop-material-img { transform: scale(1.05); }
 .shop-visual-scrim {
   position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(22, 16, 19, .14) 0%, transparent 42%, rgba(22, 16, 19, .52) 100%);
+  background:
+    linear-gradient(90deg, rgba(22, 16, 19, .76) 0%, rgba(22, 16, 19, .2) 24%, transparent 52%),
+    linear-gradient(180deg, rgba(22, 16, 19, .3) 0%, transparent 28%, transparent 70%, rgba(22, 16, 19, .62) 100%),
+    linear-gradient(90deg, transparent 70%, rgba(22, 16, 19, .24) 100%),
+    radial-gradient(54% 72% at 70% 36%, rgba(227, 169, 156, .1), transparent 72%);
   pointer-events: none;
 }
 .shop-visual-label {
@@ -998,15 +1043,22 @@ main:focus { outline: none; }
   gap: clamp(16px, 2vw, 28px);
 }
 .catalog-card {
-  border-radius: var(--radius-lg);
+  border-radius: 22px;
   overflow: hidden;
-  background: var(--night-2);
-  border: 1px solid var(--line);
+  background: linear-gradient(145deg, rgba(55, 27, 32, .92), rgba(22, 16, 19, .96));
+  border: 1px solid rgba(227, 169, 156, .12);
   transition: transform .45s var(--ease), border-color .45s, box-shadow .45s;
 }
 .catalog-card:hover { transform: translateY(-6px); border-color: var(--line-strong); box-shadow: var(--shadow-1); }
-.catalog-image { aspect-ratio: 3 / 4; }
-.catalog-image img { opacity: .82; }
+.catalog-image { aspect-ratio: 3 / 4; background: #24171b; }
+.catalog-image::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(22, 16, 19, .08), transparent 44%, rgba(22, 16, 19, .54));
+}
+.catalog-image img { opacity: .72; filter: saturate(.72) contrast(1.08) sepia(.12); mix-blend-mode: normal; }
+.catalog-image--alone { background: radial-gradient(circle at 70% 30%, rgba(185, 112, 96, .26), transparent 42%), #24171b; }
+.catalog-image--together { background: radial-gradient(circle at 35% 28%, rgba(227, 169, 156, .22), transparent 40%), #2a191d; }
+.catalog-image--remote { background: radial-gradient(circle at 72% 62%, rgba(174, 77, 65, .3), transparent 42%), #21151a; }
 .catalog-meta { padding: clamp(18px, 2vw, 24px); }
 .catalog-meta > span {
   font-size: 9px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
@@ -1027,7 +1079,9 @@ main:focus { outline: none; }
   gap: clamp(36px, 5vw, 80px);
   align-items: start;
 }
-.product-detail-visual { aspect-ratio: 3 / 4; box-shadow: var(--shadow-2); }
+.product-detail-visual { aspect-ratio: 3 / 4; box-shadow: var(--shadow-2); background: #24171b; }
+.product-detail-visual img { mix-blend-mode: normal; opacity: .82; filter: saturate(.78) contrast(1.08) sepia(.1); }
+.product-detail-visual--the-distance img { opacity: .7; filter: saturate(.65) contrast(1.12) sepia(.18); }
 .product-detail-copy .eyebrow { margin-bottom: 14px; }
 .product-detail-copy h1 {
   font-size: clamp(2.4rem, 4.6vw, 4.2rem);
@@ -1066,7 +1120,9 @@ main:focus { outline: none; }
   font-size: 16px;
 }
 .bag-total strong { font-size: 20px; color: var(--flash); }
-.empty-bag { margin-top: 48px; }
+.empty-bag { position: relative; margin-top: 48px; min-height: 230px; padding: 38px; overflow: hidden; border: 1px solid rgba(227, 169, 156, .12); background: linear-gradient(110deg, rgba(73, 32, 38, .75), rgba(22, 16, 19, .45)); }
+.empty-bag__atmosphere { position: absolute; inset: 0; opacity: .3; background: linear-gradient(90deg, rgba(22, 16, 19, .7), transparent 62%), url('/images/journey/skin-rhythm-v1.png') center / cover; filter: saturate(.4) sepia(.2); pointer-events: none; }
+.empty-bag > *:not(.empty-bag__atmosphere) { position: relative; z-index: 1; }
 .empty-bag p { margin-bottom: 28px; color: var(--muted); }
 
 /* 结账 */
@@ -1087,6 +1143,7 @@ main:focus { outline: none; }
 .demo-form input:focus { outline: none; border-color: var(--flash); }
 .demo-form input::placeholder { color: var(--muted); }
 .demo-form .primary-button { justify-self: start; margin-top: 8px; }
+.checkout-atmosphere { position: absolute; right: 0; top: 18%; width: min(36vw, 440px); height: 360px; opacity: .22; background: radial-gradient(ellipse at center, rgba(227, 169, 156, .35), transparent 64%), url('/images/journey/skin-touch-v2.png') center / cover; filter: saturate(.4) sepia(.2); mask-image: linear-gradient(90deg, transparent, #000 38%, transparent); pointer-events: none; }
 .success-state {
   padding: 36px 0;
   border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
@@ -1105,11 +1162,16 @@ main:focus { outline: none; }
   margin-top: clamp(36px, 5vw, 56px);
 }
 .journal-entry {
-  display: grid; gap: 10px;
+  position: relative; display: grid; gap: 10px;
   padding: clamp(24px, 3vw, 36px);
   border-top: 1px solid var(--line);
   transition: background .4s, padding-left .4s;
 }
+.journal-entry__visual { position: absolute; right: 6%; top: 18%; width: 28%; height: 64%; opacity: .18; background-position: center; background-size: cover; filter: saturate(.42) sepia(.18); mask-image: linear-gradient(90deg, transparent, #000 35%, transparent); pointer-events: none; }
+.journal-entry--1 .journal-entry__visual { background-image: url('/images/journey/skin-touch-v2.png'); }
+.journal-entry--2 .journal-entry__visual { background-image: url('/images/journey/skin-rhythm-v1.png'); }
+.journal-entry--3 .journal-entry__visual { background-image: url('/images/journey/hero-touch-film.png'); }
+.journal-entry > *:not(.journal-entry__visual) { position: relative; z-index: 1; }
 .journal-entry:hover { background: var(--night-2); padding-left: clamp(32px, 4vw, 48px); }
 .journal-entry > p { font-size: 12px; color: var(--flash); letter-spacing: .2em; }
 .journal-entry h2 {
@@ -1130,6 +1192,8 @@ main:focus { outline: none; }
   margin-top: clamp(32px, 5vw, 56px);
   color: var(--muted); font-size: 17px; line-height: 1.9;
 }
+.article-page { position: relative; overflow: hidden; }
+.article-atmosphere { position: absolute; right: -4%; top: 18%; width: min(38vw, 520px); height: 420px; opacity: .16; background: url('/images/journey/skin-touch-v2.png') center / cover; filter: saturate(.35) sepia(.2); mask-image: radial-gradient(ellipse at center, #000 25%, transparent 72%); pointer-events: none; }
 
 /* --------------------------------------------------------------------------
    17. Footer
@@ -1231,6 +1295,8 @@ main:focus { outline: none; }
   .hero-bg { opacity: .66; filter: brightness(.84) saturate(.82) blur(0); }
   .hero-copy { left: 20px; right: 20px; bottom: clamp(84px, 16vh, 128px); }
   .hero-copy h1 { font-size: clamp(3.1rem, 16.5vw, 5rem); }
+  .hero-copy::before { inset: -18% -10% -28% -12%; background: radial-gradient(ellipse at 42% 46%, rgba(18, 8, 12, .42), transparent 74%); }
+  .hero-copy h1 .hero-line:nth-of-type(2) { text-shadow: 0 10px 34px rgba(18, 8, 12, .42); }
   .hero-lead { font-size: 14px; }
   .hero-label { top: calc(10px + 48px + 14px); right: 20px; }
   .scroll-note { left: 50%; transform: translateX(-50%); right: auto; bottom: 20px; }
@@ -1268,6 +1334,7 @@ main:focus { outline: none; }
   /* 第四幕：全宽波形保留，标题居中于波形上方 */
   .peak-section { height: auto; min-height: 0; padding-block: var(--section-space) 0; }
   .peak-copy { max-width: none; }
+  .peak-visual { opacity: .7; }
   .wave-stage { position: static; height: 200px; margin-top: 44px; }
   .wave-hint { position: static; transform: none; width: max-content; margin: 18px auto 0; }
 

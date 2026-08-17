@@ -7,9 +7,9 @@ const copy = computed(() => language.value === 'zh' ? {
   body: '让触碰代替回答。',
   lens: '触碰 / TOUCH',
 } : {
-  eyebrow: '03 / Touch begins',
-  title: 'Hands are\nmore honest.',
-  body: 'Let touch answer instead.',
+  eyebrow: '03 / Touch is not innocent',
+  title: 'Touch is never\njust touch.',
+  body: 'Your hands already know where to go.',
   lens: 'TOUCH',
 })
 </script>

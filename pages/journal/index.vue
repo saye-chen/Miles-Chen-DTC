@@ -37,6 +37,7 @@ usePageMeta(() => ({
           class="journal-entry"
           :class="`journal-entry--${index + 1}`"
         >
+          <div class="journal-entry__visual" aria-hidden="true"></div>
           <p>0{{ index + 1 }}</p>
           <h2>{{ entry.title[language] }}</h2>
           <span>{{ entry.tagline[language] }}</span>

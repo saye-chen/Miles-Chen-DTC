@@ -9,10 +9,10 @@ const copy = computed(() => language.value === 'zh' ? {
   meta: '承认吧，你想要。给欲望留一点空间——为身体、心智与记忆之间而做。',
 } : {
   title: 'Admit it.\nYou want.',
-  description: 'Desire needs no reason. Come closer. Let it in.',
+  description: 'You came here for a reason.',
   footer: 'Objects for the space between body, mind and memory.',
   back: 'Back to top ↑',
-  meta: 'Admit it. You want. Make room for desire — objects for the space between body, mind and memory.',
+  meta: 'Admit it. You want. Make room for what your body already knows.',
 })
 
 usePageMeta(() => ({

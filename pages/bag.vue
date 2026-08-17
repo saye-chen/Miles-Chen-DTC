@@ -54,6 +54,7 @@ usePageMeta(() => ({
       </div>
 
       <div v-else class="empty-bag">
+        <div class="empty-bag__atmosphere" aria-hidden="true"></div>
         <p>{{ copy.empty }}</p>
         <NuxtLink class="primary-button" to="/shop">{{ copy.browse }} <span>↗</span></NuxtLink>
       </div>

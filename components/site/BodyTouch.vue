@@ -8,9 +8,9 @@ const copy = computed(() => language.value === 'zh' ? {
   lens: '热源 / HEAT SOURCE',
   senses: ['温度', '柔软', '在场'],
 } : {
-  eyebrow: '02 / See the heat',
-  title: 'In the dark,\nwarmth glows.',
-  body: 'You haven\'t touched it yet — you can already feel it.',
+  eyebrow: '02 / Your body answers first',
+  title: 'Your body knows\nbefore you do.',
+  body: 'You feel it before you name it.',
   lens: 'HEAT SOURCE',
   senses: ['WARMTH', 'SOFTNESS', 'PRESENCE'],
 })
@@ -32,8 +32,8 @@ useTouchField(lens)
 
     <div ref="lens" class="touch-lens" data-reveal>
       <SitePicture
-        src="/images/journey/touch-v2-wide.png"
-        :alt="language === 'zh' ? '黑暗中泛着体温般暖光的柔软曲面与手的影像' : 'A soft surface and a hand glowing with body heat in the dark'"
+        src="/images/journey/skin-touch-v2.png"
+        :alt="language === 'zh' ? '黑暗中，手掌沿着温暖的皮肤与身体曲线停留' : 'A hand resting along warm skin and a curved body in the dark'"
         sizes="(max-width: 700px) 92vw, 54vw"
         parallax="0.08"
         img-class="touch-lens-img"
