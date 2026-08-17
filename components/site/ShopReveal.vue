@@ -5,7 +5,7 @@ const copy = computed(() => language.value === 'zh' ? {
   eyebrow: '06 / 进入',
   title: '让它\n找到你。',
   description: '在黑暗的尽头，有一扇门。它一直在等你。',
-  cta: '进入物件',
+  cta: '进入系列',
   cta2: '读一篇手记',
   label: '概念演示 / CONCEPTUAL',
   note: '演示内容 · 商品事实、价格与库存待确认。',

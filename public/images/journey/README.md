@@ -5,11 +5,11 @@
 | 文件 | 用途 | 来源状态 |
 | --- | --- | --- |
 | `hero-touch-film.png` | 首页第一幕主视觉与全局氛围光影（兼作默认 OG 分享图） | `demo: true`, `dataStatus: "fictional"` |
-| `skin-touch-v2.png` | Body Touch 第二幕皮肤与手部触碰主视觉（Act 02 看见体温） | `demo: true`, `dataStatus: "fictional"` |
+| `skin-touch-v2.png` | Body Touch 第二幕皮肤与手部触碰主视觉（Act 02 看见体温，已整体提亮 + 暖化暗部） | `demo: true`, `dataStatus: "fictional"` |
 | `scene-touch-v2.png` | Desire Scenes 第三幕触碰近景（Act 03 发生触碰） | `demo: true`, `dataStatus: "fictional"` |
 | `skin-rhythm-v1.png` | Peak 第四幕律动氛围影像（Act 04）、购物袋空态与手记氛围层 | `demo: true`, `dataStatus: "fictional"` |
 | `pexels-act05-black-lingerie-v1.png` | 首页第五幕身体高潮主视觉（Pexels 10670470，已裁切调色） | `external: Pexels`, `license: verify before production` |
-| `pexels-six-afterglow-v1.png` | Shop 第六幕时尚人体主视觉（Pexels 17101140，已裁切调色） | `external: Pexels`, `license: verify before production` |
+| `pexels-six-afterglow-v1.png` | Shop 第六幕时尚人体主视觉（Pexels 17101140，纯黑背景已暖化为酒红暗部、主体提亮） | `external: Pexels`, `license: verify before production` |
 | `product-the-object.png` | 商品 The Object (alone) 独立商品图 | `demo: true`, `dataStatus: "fictional"` |
 | `product-the-distance.png` | 商品 The Distance (remote) 独立商品图 | `demo: true`, `dataStatus: "fictional"` |
 | `product-the-pair.png` | 商品 The Pair (together) 独立商品图 | `demo: true`, `dataStatus: "fictional"` |

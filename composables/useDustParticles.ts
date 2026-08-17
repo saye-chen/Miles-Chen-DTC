@@ -114,7 +114,9 @@ export function useDustParticles(canvas: Ref<HTMLCanvasElement | null>, host: Re
     if (!el) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     resize()
-    particles = Array.from({ length: lowEnd ? Math.min(count, 12) : count }, spawn)
+    const mobile = window.matchMedia('(max-width: 700px)').matches
+    const particleCount = lowEnd ? Math.min(count, 12) : mobile ? Math.min(count, 24) : count
+    particles = Array.from({ length: particleCount }, spawn)
     window.addEventListener('resize', resize)
     start()
     // 离开视口暂停，回到视口恢复（首屏滚动到下面后省电）
