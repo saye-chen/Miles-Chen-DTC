@@ -1,1 +1,1561 @@
 @import "tailwindcss";
+
+/* ==========================================================================
+   Miles Chen — 视觉设计系统
+   --------------------------------------------------------------------------
+   单一、连贯的设计语言：统一的 tokens、一套网格节奏、一组移动端断点、
+   一组 reduced-motion 规则。组件 DOM 与 class 名保持不变。
+   品牌方向：暗夜 · 欲望 · 私密 · 材质感（樱桃红 × 黑莓 × 铜光）。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design tokens
+   -------------------------------------------------------------------------- */
+:root {
+  /* 色板 */
+  --night: #161013;            /* 页面底色：近黑李子色 */
+  --night-2: #211a1d;          /* 抬升表面：卡片 / 面板 */
+  --wine: #2c151b;             /* 深酒红表面 */
+  --cherry: #7e2f2e;           /* 深樱桃红 */
+  --flash: #e3a99c;            /* 铜粉高光 */
+  --ivory: #f3ece3;            /* 主文字 */
+  --muted: #a8968e;            /* 次级文字 */
+  --line: rgba(243, 236, 227, .14);
+  --line-strong: rgba(243, 236, 227, .3);
+  --paper: #efe5d8;            /* 亮色信任区背景 */
+  --paper-ink: #2b2126;
+  --paper-muted: #6b5a52;      /* 信任区次级文字：对 #efe5d8 对比度 ≈5.25:1（≥4.5） */
+
+  /* 字体 */
+  --font-display: "Iowan Old Style", "Baskerville", "Times New Roman", Georgia, serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+
+  /* 布局：内容列尽量贴近视口边缘（1440 屏两侧仅 ~44px 设计边距，由氛围光承接） */
+  --content-max: 1440px;
+  --gutter: clamp(20px, 3vw, 44px);
+  --section-space: clamp(96px, 11vw, 168px);
+  --radius-lg: clamp(16px, 2vw, 26px);
+
+  /* 阴影与动效 */
+  --shadow-1: 0 18px 60px rgba(0, 0, 0, .32);
+  --shadow-2: 0 32px 90px rgba(0, 0, 0, .42);
+  --ease: cubic-bezier(.22, .61, .36, 1);
+
+  --header-h: clamp(64px, 7vw, 84px);
+
+  /* 叙事温度色阶：首页五幕从「暗」到「炽热」逐级升温 */
+  --heat-1: rgba(227, 169, 156, .1);
+  --heat-2: rgba(233, 158, 128, .22);
+  --heat-3: rgba(238, 148, 116, .38);
+  --heat-4: rgba(244, 138, 104, .55);
+  --heat-5: rgba(255, 140, 96, .72);
+}
+
+/* --------------------------------------------------------------------------
+   2. Base
+   -------------------------------------------------------------------------- */
+html { scroll-padding-top: 84px; }
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+* { box-sizing: border-box; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+img { display: block; max-width: 100%; }
+h1, h2, h3, p { margin: 0; }
+::selection { background: rgba(227, 169, 156, .85); color: var(--night); }
+
+/* --------------------------------------------------------------------------
+   3. 无障碍
+   -------------------------------------------------------------------------- */
+.skip-link {
+  position: fixed; left: 20px; top: 12px; z-index: 100;
+  padding: 10px 14px; border-radius: 6px;
+  background: var(--ivory); color: var(--night);
+  font-size: 13px; font-weight: 600;
+  transform: translateY(-180%); transition: transform .2s ease;
+}
+.skip-link:focus { transform: translateY(0); outline: 2px solid var(--flash); outline-offset: 3px; }
+:where(a, button, input, select, textarea):focus-visible { outline: 2px solid var(--flash); outline-offset: 3px; }
+main:focus { outline: none; }
+
+/* --------------------------------------------------------------------------
+   4. 布局原语
+   -------------------------------------------------------------------------- */
+.site-shell {
+  min-height: 100vh;
+  overflow: clip;
+  /* 暗部"设计化"：左右全高氛围光柱（酒红/铜粉），让边距是有光的暗部而非平黑 */
+  background:
+    radial-gradient(900px 130% at 0% 50%, rgba(126, 47, 46, .16), transparent 70%),
+    radial-gradient(700px 130% at 100% 50%, rgba(227, 169, 156, .08), transparent 70%),
+    radial-gradient(1100px 560px at 88% -12%, rgba(126, 47, 46, .17), transparent 62%),
+    radial-gradient(820px 480px at -8% 32%, rgba(44, 21, 27, .5), transparent 64%),
+    var(--night);
+}
+.section-frame, .site-header {
+  width: min(var(--content-max), calc(100% - var(--gutter) * 2));
+  margin-inline: auto;
+}
+
+/* 眉题：小号字距大写标签 */
+.eyebrow {
+  margin: 0 0 clamp(16px, 2vw, 22px);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .26em; text-transform: uppercase;
+  color: var(--flash);
+}
+
+/* 展示字体标题基类 */
+.art-title, .page-title, .product-detail-copy h1 {
+  font-family: var(--font-display); font-weight: 400;
+}
+
+/* 按钮与链接 */
+.primary-button {
+  min-height: 50px;
+  display: inline-flex; align-items: center; gap: 18px;
+  padding: 0 24px; border-radius: 8px;
+  background: var(--flash); color: var(--night);
+  font-size: 14px; font-weight: 600; letter-spacing: .04em;
+  transition: transform .35s var(--ease), background .35s, box-shadow .35s;
+}
+.primary-button:hover, .primary-button:focus-visible {
+  background: var(--ivory);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(227, 169, 156, .25);
+}
+.primary-button span { font-size: 16px; line-height: 1; }
+
+/* 透明描边按钮：次级 CTA（首屏第二入口 / 第六幕双按钮） */
+.ghost-button {
+  min-height: 50px;
+  display: inline-flex; align-items: center; gap: 18px;
+  padding: 0 24px; border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  color: var(--ivory);
+  font-size: 14px; font-weight: 600; letter-spacing: .04em;
+  transition: border-color .35s, color .35s, background .35s, transform .35s var(--ease);
+}
+.ghost-button:hover, .ghost-button:focus-visible {
+  border-color: var(--flash);
+  color: var(--flash);
+  background: rgba(227, 169, 156, .07);
+  transform: translateY(-2px);
+}
+.ghost-button span { font-size: 16px; line-height: 1; }
+
+/* 触屏按压反馈：按下即微缩，不依赖 hover */
+.primary-button:active, .ghost-button:active,
+.filter-nav button:active, .menu-button:active, .language-button:active {
+  transform: translateY(0) scale(.98);
+}
+
+/* 响应式图片组件：picture 撑满容器，img 填充裁剪 */
+.site-picture { display: block; width: 100%; height: 100%; }
+.site-picture img { display: block; width: 100%; height: 100%; }
+
+/* --------------------------------------------------------------------------
+   5. Header
+   -------------------------------------------------------------------------- */
+.site-header {
+  position: fixed; top: clamp(10px, 1.6vh, 16px); left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  /* 与加宽后的内容列对齐 */
+  width: min(1360px, calc(100% - clamp(24px, 3vw, 44px)));
+  min-height: clamp(48px, 5.5vh, 58px);
+  display: flex; align-items: center; gap: clamp(14px, 2.4vw, 30px);
+  padding: 0 clamp(10px, 1.2vw, 18px) 0 clamp(20px, 2.2vw, 28px);
+  border-radius: 999px;
+  border: 1px solid rgba(243, 236, 227, .14);
+  background: rgba(22, 16, 19, .42);
+  backdrop-filter: blur(20px) saturate(1.15); -webkit-backdrop-filter: blur(20px) saturate(1.15);
+  box-shadow: 0 12px 44px rgba(0, 0, 0, .32);
+}
+.wordmark { font-size: 12px; font-weight: 600; letter-spacing: .28em; color: var(--ivory); }
+.wordmark span { font-weight: 400; color: var(--muted); }
+.desktop-nav { margin-left: auto; display: flex; gap: clamp(22px, 3vw, 40px); }
+.desktop-nav a {
+  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--muted); padding-block: 8px;
+  border-bottom: 1px solid transparent;
+  transition: color .3s, border-color .3s;
+}
+.desktop-nav a:hover { color: var(--ivory); border-color: var(--flash); }
+.language-button {
+  min-width: 44px; height: 44px;
+  display: grid; place-items: center;
+  font-size: 11px; letter-spacing: .14em;
+  color: var(--flash); border: 1px solid transparent; border-radius: 6px;
+  transition: color .3s, border-color .3s;
+}
+.language-button:hover { color: var(--ivory); border-color: var(--line-strong); }
+.header-bag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--flash); padding-bottom: 4px;
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s;
+}
+.header-bag:hover { border-color: var(--flash); }
+.header-bag span { font-size: 14px; line-height: 1; }
+.menu-button {
+  width: 44px; height: 44px;
+  display: none; flex-direction: column; justify-content: center; gap: 7px;
+  padding: 0;
+}
+.menu-button span { width: 24px; height: 1.5px; background: var(--ivory); transition: background .3s; }
+.menu-button:hover span { background: var(--flash); }
+.mobile-nav { display: none; }
+
+/* --------------------------------------------------------------------------
+   6. 首页 · Hero
+   -------------------------------------------------------------------------- */
+.desire-hero {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+}
+/* 全屏影像背景层：从黑暗中浮现，悬停/触碰时更亮，明暗对比更强 */
+.hero-visual {
+  position: absolute; inset: 0;
+  overflow: hidden;
+}
+.hero-bg {
+  /* inset: 0 铺满整个视口；右侧/下缘的"留白"由视差 scale(1.2) 提供（约 10% 出血）
+     注意：不能再用 inset:-12% + width/height:100% —— 那会让盒子偏移而右下露底 */
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  mix-blend-mode: screen;
+  /* 首屏基础亮度：比 v1.3 提升约 +20%（.3→.46 / brightness .55→.68），第一眼即有形态 */
+  opacity: .46; filter: brightness(.68) saturate(.74) blur(5px);
+  transition: opacity 1.8s var(--ease), filter 1.8s var(--ease), transform 1.8s var(--ease);
+}
+.desire-hero:hover .hero-bg, .hero-visual:focus-within .hero-bg {
+  opacity: .94;
+  filter: brightness(1.02) saturate(.9) blur(0);
+}
+/* 空间层次遮罩：顶部压暗（让胶囊导航浮出）、中部透光、底部压暗（让左下文字可读） */
+.hero-scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(22, 16, 19, .58) 0%, rgba(22, 16, 19, .18) 28%, rgba(22, 16, 19, .04) 52%, rgba(22, 16, 19, .78) 100%),
+    radial-gradient(120% 85% at 72% 18%, rgba(126, 47, 46, .16), transparent 62%);
+  pointer-events: none;
+}
+/* 触碰机制：光线被指针吸引（--pointer-x/y），按下/触摸时 --heat 升高变暖，移开后余温衰减 */
+.hero-visual::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background:
+    radial-gradient(30% 44% at var(--pointer-x, 50%) var(--pointer-y, 60%), rgba(230, 170, 150, calc(.08 + var(--heat, 0) * .34)), transparent 72%),
+    radial-gradient(60% 52% at 50% 60%, rgba(227, 169, 156, calc(.05 + var(--heat, 0) * .16)), transparent 78%);
+  mix-blend-mode: screen; pointer-events: none;
+}
+.hero-dust { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; pointer-events: none; z-index: 2; }
+.hero-pulse { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; pointer-events: none; z-index: 3; }
+.hero-label {
+  position: absolute; top: calc(clamp(10px, 1.6vh, 16px) + clamp(48px, 5.5vh, 58px) + 18px);
+  right: clamp(20px, 3vw, 48px);
+  z-index: 4;
+  font-size: 9px; letter-spacing: .24em; color: var(--muted);
+}
+
+/* 偏左中央的"题签式"大字：超大斜体衬线，广告标语感，较 v1.3 略放大并上移 */
+.hero-copy {
+  position: absolute; z-index: 4;
+  left: clamp(24px, 6vw, 96px);
+  bottom: clamp(64px, 12vh, 128px);
+  max-width: 800px;
+}
+.hero-copy h1 {
+  font-family: var(--font-display); font-weight: 400;
+  font-style: italic;
+  font-size: clamp(3.8rem, 10.2vw, 9.8rem);
+  line-height: .86; letter-spacing: -.05em;
+}
+/* 标题行/字结构：行占一行，字保持 inline（逐字动画）；第二行铜粉高亮 */
+.hero-copy h1 .hero-line { display: block; }
+.hero-copy h1 .hero-line:nth-of-type(2) { color: var(--flash); }
+.t-line { display: block; }
+.hero-copy h1 em { font-style: normal; color: var(--flash); }
+.hero-lead {
+  max-width: 34ch;
+  margin-top: clamp(22px, 2.6vw, 34px);
+  color: var(--muted); font-size: 15px; line-height: 1.75;
+}
+.hero-actions {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: clamp(20px, 2.6vw, 32px);
+  margin-top: clamp(30px, 3.6vw, 44px);
+}
+/* 右下角滚动提示：底部居中锚定，与右上题签形成对角平衡，不再孤悬一角 */
+.scroll-note {
+  position: absolute; z-index: 4;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: clamp(20px, 3vh, 36px);
+  display: inline-flex; align-items: center; gap: 10px;
+  color: var(--muted); font-size: 10px; letter-spacing: .24em; text-transform: uppercase;
+}
+.scroll-note span { color: var(--flash); }
+
+/* --------------------------------------------------------------------------
+   7. 首页 · 章节通用排版
+   -------------------------------------------------------------------------- */
+/* 章节标题（中等层级）：收紧字号，配合行文断点，保证一屏内不折行 */
+.body-touch h2, .want-copy h2, .relationship h2, .peak-section h2,
+.scenes h2, .trust-section h2, .journal h2, .shop-copy h2 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(2.1rem, 3.6vw, 3.4rem);
+  line-height: 1.02; letter-spacing: -.02em;
+  white-space: pre-line;
+}
+/* 高潮章（第五幕）标题：层级放大 + 从象牙白到炽热的渐变文字 */
+.want-copy h2 {
+  font-size: clamp(2.7rem, 4.8vw, 4.6rem);
+  background: linear-gradient(180deg, var(--ivory) 15%, var(--flash) 55%, #ffb27a 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.touch-copy > p:last-child, .want-copy > p:not(.eyebrow),
+.relationship-heading > p:last-child, .peak-body {
+  max-width: 30ch;
+  margin-top: 20px;
+  color: var(--muted); font-size: 14px; line-height: 1.7;
+}
+
+/* 影像面板通用：图片作为真实质感底层 */
+.touch-lens, .want-object, .relationship-stage, .catalog-image,
+.product-detail-visual, .shop-visual {
+  position: relative; overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--wine);
+}
+/* 面板影像统一处理：同一套滤镜基调，让来源亮度不一的素材渲染后协调一致 */
+.touch-lens img, .catalog-image img, .product-detail-visual img,
+.scene-visual img, .shop-material-img {
+  width: 100%; height: 100%; object-fit: cover;
+  mix-blend-mode: screen; opacity: .9;
+  filter: saturate(.9) contrast(1.16) brightness(1.06);
+  transition: transform 1.1s var(--ease), filter .8s;
+}
+.touch-lens:hover img, .catalog-card:hover .catalog-image img { transform: scale(1.05); }
+
+/* --------------------------------------------------------------------------
+   8. 首页 · 身体触碰
+   -------------------------------------------------------------------------- */
+.body-touch {
+  /* 全幅幕：左侧暗部放文案，右侧热源影像铺到视口边缘
+     margin-top：幕间留出一小段呼吸空隙，配合 [data-act]::after 光缝形成"光的过渡带" */
+  width: 100%;
+  margin-top: clamp(24px, 3.5vh, 44px);
+  display: grid;
+  /* 不对称舞台：文案列（0.85fr）+ 热源影像列（1.15fr，铺满右缘） */
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: clamp(40px, 5vw, 80px);
+  align-items: center;
+  min-height: calc(100svh - var(--header-h));
+  height: auto;
+  padding: clamp(56px, 8vh, 96px) 0 clamp(44px, 6vh, 72px) var(--gutter);
+  overflow: hidden;
+  /* 右半从影像渗出体温光，左半保持暗部：黑暗里温度先亮起来 */
+  background:
+    radial-gradient(58% 120% at 78% 50%, rgba(126, 47, 46, .2), transparent 66%),
+    radial-gradient(40% 90% at 22% 50%, rgba(44, 21, 27, .52), transparent 70%);
+}
+/* 热源影像：铺满右列并出血到视口右缘；左缘 mask 淡出到黑暗，
+   不再是"贴图卡片"，而是从暗部里亮起来的取景窗（去圆角、去阴影） */
+.touch-lens {
+  order: 2;
+  position: relative;
+  height: min(74vh, 660px);
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  background: var(--wine);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 26%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 26%);
+}
+/* 文案列：纵向居中，站在左侧暗部之上 */
+.touch-copy {
+  order: 1;
+  align-self: center;
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; justify-content: center;
+  padding-top: clamp(8px, 1vh, 16px);
+}
+.touch-lens img { min-height: 100%; opacity: .94; object-position: 50% 42%; filter: saturate(.92) contrast(1.16) brightness(1.08); }
+/* 热源光斑：指针靠近时体温光跟随（--pointer-x/y），按下/触摸升温（--heat），
+   与首页触碰机制同款；无指针时保持中央缓慢呼吸 */
+.touch-lens::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background:
+    radial-gradient(34% 46% at var(--pointer-x, 50%) var(--pointer-y, 52%), rgba(230, 170, 150, calc(.1 + var(--heat, 0) * .3)), transparent 70%),
+    radial-gradient(55% 60% at 50% 56%, var(--heat-3), transparent 68%);
+  mix-blend-mode: screen;
+  animation: heat-breathe 5.5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes heat-breathe {
+  from { opacity: .5; transform: scale(.97); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+.touch-lens::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(22, 16, 19, .45));
+  pointer-events: none;
+}
+.lens-ring {
+  position: absolute; z-index: 2;
+  width: clamp(140px, 18vw, 220px); aspect-ratio: 1;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(243, 236, 227, .4); border-radius: 50%;
+  box-shadow: 0 0 42px rgba(227, 169, 156, .28), inset 0 0 30px rgba(227, 169, 156, .16);
+  transition: transform 1s var(--ease);
+  pointer-events: none;
+}
+.touch-lens:hover .lens-ring { transform: translate(-50%, -50%) scale(1.3); }
+.touch-label {
+  position: absolute; top: 20px; right: 20px; z-index: 1;
+  font-size: 9px; letter-spacing: .22em; color: var(--muted);
+}
+/* 感官标签：WARMTH / SOFTNESS / PRESENCE 沿底部排列，
+   悬停/聚焦影像时逐个亮起（stagger），强化材质联想 */
+.sensory-labels {
+  position: absolute; left: 0; right: 0; bottom: 16px; z-index: 2;
+  display: flex; justify-content: center; gap: clamp(18px, 3vw, 34px);
+  pointer-events: none;
+}
+.sensory-labels span {
+  font-size: 9px; letter-spacing: .26em; text-transform: uppercase;
+  color: var(--ivory);
+  opacity: .28;
+  transform: translateY(6px);
+  transition: opacity .5s var(--ease), transform .5s var(--ease), text-shadow .5s;
+}
+.touch-lens:hover .sensory-labels span,
+.touch-lens:focus-within .sensory-labels span {
+  opacity: 1;
+  transform: translateY(0);
+  text-shadow: 0 0 18px rgba(227, 169, 156, .55);
+}
+.touch-lens:hover .sensory-labels span:nth-child(2),
+.touch-lens:focus-within .sensory-labels span:nth-child(2) { transition-delay: .14s; }
+.touch-lens:hover .sensory-labels span:nth-child(3),
+.touch-lens:focus-within .sensory-labels span:nth-child(3) { transition-delay: .28s; }
+
+/* 体温余晕：影像向文案一侧渗出的暖光——温度照亮了房间 */
+.touch-halo {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(46% 74% at 72% 50%, rgba(227, 169, 156, .15), transparent 70%),
+    radial-gradient(30% 52% at 58% 50%, rgba(126, 47, 46, .24), transparent 72%);
+  mix-blend-mode: screen;
+  animation: halo-breathe 7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   9. 首页 · 欲望场景（错位编辑节奏）
+   -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   9. 首页 · 发生触碰（全宽沉浸影像，文字叠在画面左下）
+   -------------------------------------------------------------------------- */
+.scenes {
+  /* 全幅幕：影像真正铺满整屏边缘（桌面无内边距），文字叠在画面左下
+     margin-top：与上一幕之间的呼吸空隙 */
+  position: relative;
+  width: 100%;
+  margin-top: clamp(24px, 3.5vh, 44px);
+  height: calc(100svh - var(--header-h));
+  display: flex;
+  padding: 0;
+  overflow: hidden;
+}
+.scene-visual {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--wine);
+}
+.scene-visual img {
+  width: 100%; height: 100%; object-fit: cover;
+  mix-blend-mode: screen; opacity: .9;
+  filter: saturate(.9) contrast(1.16) brightness(1.06);
+  transition: transform 1.2s var(--ease), filter .8s;
+}
+.scene-visual:hover img { transform: scale(1.05); filter: saturate(1.02) contrast(1.18) brightness(1.1); }
+.scene-light {
+  position: absolute; inset: 0;
+  background: radial-gradient(60% 80% at 72% 26%, var(--heat-3), transparent 70%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+/* 铜光斜扫 */
+.scene-visual::after {
+  content: ""; position: absolute; inset: -20%;
+  background: linear-gradient(115deg, transparent 42%, rgba(240, 220, 200, .24) 50%, transparent 58%);
+  mix-blend-mode: screen;
+  transform: rotate(-18deg) translateX(-35%);
+  transition: transform 1.5s var(--ease);
+  pointer-events: none;
+}
+.scene-visual:hover::after { transform: rotate(-18deg) translateX(35%); }
+/* 可读性：文字区底部渐变遮罩 */
+.scene-visual::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, transparent 42%, rgba(22, 16, 19, .78));
+  pointer-events: none;
+}
+.scene-visual > span {
+  position: absolute; top: 20px; right: 22px; left: auto; z-index: 2;
+  font-size: 9px; letter-spacing: .22em; color: var(--muted);
+}
+.scene-copy {
+  position: absolute; z-index: 2;
+  left: clamp(24px, 4vw, 56px);
+  bottom: clamp(24px, 3.5vh, 48px);
+  max-width: 560px;
+}
+.scene-copy h2 {
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+  max-width: 14ch;
+}
+.scene-copy > p:last-child {
+  max-width: 44ch; margin-top: 14px;
+  color: var(--muted); font-size: 14px; line-height: 1.7;
+}
+
+/* --------------------------------------------------------------------------
+   10. 首页 · 产生渴望（全屏炽热，欲望之核居中聚焦 —— 高潮章）
+   -------------------------------------------------------------------------- */
+.want-section {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(24px, 3.5vh, 44px);
+  height: calc(100svh - var(--header-h));
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  /* 全屏炽热：高潮章的背景可以整体亮起来 */
+  background:
+    radial-gradient(55% 50% at 50% 40%, var(--heat-2), transparent 70%),
+    radial-gradient(36% 32% at 50% 56%, var(--heat-4), transparent 68%);
+}
+/* 欲望之核：炽热的圆形发光体，缓慢膨胀（v1.3 的 360px → 约 1.3×，468px） */
+.want-object {
+  width: min(468px, 52vh, 64vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  box-shadow:
+    0 0 120px var(--heat-5),
+    0 0 280px var(--heat-4),
+    inset 0 0 80px var(--heat-3);
+}
+/* 光晕层：随滚动进入扩散、离开收回（由 scroll-reveal 的 scale 驱动），并持续缓慢呼吸 */
+.object-halo {
+  position: absolute; inset: -34%; z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, var(--heat-4), var(--heat-3) 42%, transparent 68%);
+  filter: blur(26px);
+  animation: halo-breathe 7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes halo-breathe {
+  from { opacity: .55; transform: scale(.92); }
+  to { opacity: 1; transform: scale(1.12); }
+}
+.object-glow {
+  position: absolute; inset: 0; z-index: 1;
+  /* AVIF → WebP → PNG 逐级回退（CSS background 不支持 <picture>） */
+  background-image:
+    url("/images/journey/hero-touch-film.avif"),
+    url("/images/journey/hero-touch-film.webp"),
+    url("/images/journey/hero-touch-film.png");
+  background-position: center;
+  background-size: cover;
+  mix-blend-mode: screen; opacity: .95;
+  border-radius: 50%;
+  filter: saturate(1.05) contrast(1.15);
+  animation: desire-glow 6s ease-in-out infinite alternate;
+}
+@keyframes desire-glow {
+  from { transform: scale(1); filter: saturate(.95) brightness(1); }
+  to { transform: scale(1.07); filter: saturate(1.18) brightness(1.22); }
+}
+.want-object::after { content: none; }
+.want-object > span {
+  position: absolute; top: 50%; left: 50%; z-index: 2;
+  transform: translate(-50%, -50%);
+  font-size: 9px; letter-spacing: .26em; color: var(--ivory);
+  mix-blend-mode: difference;
+}
+.want-copy {
+  max-width: 520px;
+  margin-top: clamp(28px, 4vh, 48px);
+}
+.want-copy h2 { margin-inline: auto; }
+.want-copy > p:not(.eyebrow) { max-width: 30ch; margin-inline: auto; }
+
+/* 上升余烬：从欲望之核下方缓缓升起的暖光微粒，让高潮幕"活着" */
+.want-embers {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.want-embers span {
+  position: absolute;
+  left: calc(8% + var(--ember-i) * 13%);
+  bottom: -6px;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 184, 142, .55);
+  box-shadow: 0 0 8px 1px rgba(255, 160, 120, .35);
+  opacity: 0;
+  animation: ember-rise 8s ease-in infinite;
+  animation-delay: calc(var(--ember-i) * .85s);
+}
+@keyframes ember-rise {
+  0% { transform: translate(0, 0) scale(.5); opacity: 0; }
+  14% { opacity: .9; }
+  100% { transform: translate(calc(var(--ember-i) * 5px - 18px), -72vh) scale(1.2); opacity: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   11. 首页 · 独处 / 两人
+   -------------------------------------------------------------------------- */
+.relationship {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+  padding-block: var(--section-space);
+  border-top: 1px solid var(--line);
+}
+.relationship-heading h2 { max-inline-size: 18ch; }
+.relationship-stage {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  box-shadow: var(--shadow-2);
+}
+.relationship-half {
+  flex: 1;
+  display: flex; align-items: flex-end;
+  padding: clamp(18px, 2.4vw, 26px);
+  font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+  color: var(--ivory);
+  transition: flex .8s var(--ease), filter .8s;
+}
+.relationship-half--alone { background: linear-gradient(120deg, #3a1c20, #1d1215); }
+.relationship-half--together { background: linear-gradient(120deg, #1d1215, #7e2f2e); }
+.relationship-stage:hover .relationship-half--alone { flex: .78; filter: brightness(.6); }
+.relationship-stage:hover .relationship-half--together { flex: 1.22; filter: brightness(1.2); }
+.relationship-beam {
+  position: absolute; top: -10%; bottom: -10%; left: 50%;
+  width: 1.5px;
+  background: linear-gradient(180deg, transparent, var(--flash), transparent);
+  box-shadow: 0 0 30px 6px rgba(227, 169, 156, .38);
+  transition: left 1s var(--ease);
+  pointer-events: none;
+}
+.relationship-stage:hover .relationship-beam { left: 56%; }
+
+/* --------------------------------------------------------------------------
+   12. 首页 · 感到律动（全宽对称声波横贯画面，标题居中）
+   -------------------------------------------------------------------------- */
+.peak-section {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(24px, 3.5vh, 44px);
+  height: calc(100svh - var(--header-h));
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  /* 律动氛围：波形下方的持续暖光，让"节奏"不只是几根细线 */
+  background:
+    radial-gradient(58% 44% at 50% 82%, var(--heat-2), transparent 70%),
+    radial-gradient(36% 30% at 50% 94%, var(--heat-4), transparent 72%);
+}
+.peak-copy {
+  position: relative; z-index: 1;
+  max-width: 640px;
+  text-align: center;
+}
+.peak-copy h2 { margin-inline: auto; }
+.peak-copy .peak-body { margin-inline: auto; }
+.wave-stage {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 54%;
+  display: flex; align-items: center; justify-content: space-evenly;
+  gap: clamp(6px, .9vw, 12px);
+  opacity: .85;
+}
+/* 节奏互动：--wave-lift（JS 按指针位置写入）抬高波峰，--wave-x 定位暖光 */
+.wave-stage i {
+  width: clamp(2px, .28vw, 4px);
+  height: calc((18px + var(--wave-index) * 9px) * var(--wave-lift, 1));
+  background: linear-gradient(180deg, var(--flash), var(--cherry));
+  box-shadow: 0 0 16px rgba(227, 169, 156, .35);
+  filter: brightness(calc(1 + var(--wave-heat, 0) * .55));
+  animation: wave-breathe 2s ease-in-out infinite alternate;
+  animation-delay: calc(var(--wave-index) * -.1s);
+  transition: height .35s var(--ease);
+}
+.wave-stage i:nth-child(odd) { animation-duration: 1.5s; }
+@keyframes wave-breathe {
+  from { opacity: .45; }
+  to { opacity: 1; }
+}
+/* 按住暖色：跟随指针位置的一团暖光，亮度由 --wave-heat 控制 */
+.wave-stage::after {
+  content: ""; position: absolute; inset: -30% 0;
+  background: radial-gradient(42% 100% at var(--wave-x, 50%) 50%,
+    rgba(255, 150, 110, calc(var(--wave-heat, 0) * .5)), transparent 72%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+/* 节奏引导文案：默认提示移动，按住时变暖 */
+.wave-hint {
+  position: absolute; z-index: 2;
+  left: 50%; bottom: clamp(14px, 2.6vh, 24px);
+  transform: translateX(-50%);
+  font-size: 10px; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--muted);
+  transition: color .4s;
+}
+.wave-hint.is-holding { color: var(--flash); }
+
+/* --------------------------------------------------------------------------
+   13. 首页 · 信任（唯一的亮色章节，形成明暗对比）
+   -------------------------------------------------------------------------- */
+.trust-section {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: clamp(48px, 7vw, 120px);
+  align-items: start;
+  padding-block: var(--section-space);
+  padding-inline: max(var(--gutter), calc((100% - var(--content-max)) / 2 + var(--gutter)));
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+.trust-section .eyebrow { color: var(--cherry); }
+.trust-section h2 { color: var(--paper-ink); max-inline-size: 16ch; }
+.trust-list { border-top: 1px solid rgba(43, 33, 38, .18); }
+.trust-item {
+  display: grid;
+  grid-template-columns: clamp(28px, 3vw, 40px) 1fr;
+  gap: clamp(14px, 2vw, 24px);
+  padding-block: clamp(20px, 2.4vw, 28px);
+  border-bottom: 1px solid rgba(43, 33, 38, .18);
+}
+.trust-item > span { font-size: 20px; color: var(--cherry); }
+.trust-item h3 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  margin-bottom: 6px;
+}
+.trust-item p { color: var(--paper-muted); font-size: 14px; max-width: 46ch; }
+
+/* --------------------------------------------------------------------------
+   14. 首页 · 手记入口
+   -------------------------------------------------------------------------- */
+.journal {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+  padding-block: var(--section-space);
+  border-top: 1px solid var(--line);
+}
+.journal-card {
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: 48px;
+  min-height: clamp(240px, 26vw, 320px);
+  padding: clamp(24px, 3vw, 34px);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #5c2428, #2c151b);
+  box-shadow: var(--shadow-1);
+  transition: transform .5s var(--ease), box-shadow .5s;
+}
+.journal-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-2); }
+.journal-card > span { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--flash); }
+.journal-card strong {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.05;
+  white-space: pre-line;
+}
+
+/* --------------------------------------------------------------------------
+   15. 首页 · 商店承接（预留，当前未挂载）
+   -------------------------------------------------------------------------- */
+.shop-reveal {
+  /* 全幅幕：文案列立在左暗部，材质影像作为"门扉"铺到视口右缘
+     margin-top：与上一幕之间的呼吸空隙 */
+  width: 100%;
+  margin-top: clamp(24px, 3.5vh, 44px);
+  display: grid;
+  /* 文案列（0.9fr）+ 门扉影像列（1.1fr，铺满右缘） */
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 5vw, 80px);
+  align-items: center;
+  min-height: calc(100svh - var(--header-h));
+  height: auto;
+  padding: clamp(56px, 8vh, 96px) 0 clamp(44px, 6vh, 72px) var(--gutter);
+  overflow: hidden;
+  background:
+    radial-gradient(56% 110% at 22% 50%, rgba(126, 47, 46, .18), transparent 66%),
+    radial-gradient(44% 100% at 80% 50%, rgba(44, 21, 27, .5), transparent 72%);
+}
+/* 门扉影像：铺满右列并出血到视口右缘，去圆角去卡片阴影；
+   材质作为"门"的意象，光从门缝与门下渗出（不再是贴图卡片） */
+.shop-visual {
+  order: 2;
+  position: relative;
+  height: min(74vh, 660px);
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  background: var(--wine);
+}
+/* 材质主视觉：真实质感底层（概念演示素材）+ 底部渐变压暗保证标签可读 */
+.shop-material-img {
+  width: 100%; height: 100%; object-fit: cover;
+  object-position: 50% 42%;
+  mix-blend-mode: screen; opacity: .92;
+  filter: saturate(.9) contrast(1.16) brightness(1.06);
+  transition: transform 1.2s var(--ease);
+}
+.shop-visual:hover .shop-material-img { transform: scale(1.05); }
+.shop-visual-scrim {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(22, 16, 19, .14) 0%, transparent 42%, rgba(22, 16, 19, .52) 100%);
+  pointer-events: none;
+}
+.shop-visual-label {
+  position: absolute; top: 18px; right: 20px; z-index: 3;
+  font-size: 9px; letter-spacing: .22em; color: var(--muted);
+}
+/* 门缝光：从门扉左缘渗入的一线光（"进入"的意象），指向左侧双按钮 */
+.shop-visual::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; z-index: 2;
+  width: clamp(60px, 9vw, 130px);
+  background: linear-gradient(90deg, rgba(255, 217, 200, .16), rgba(227, 169, 156, .1), transparent);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+/* 门下光：门扉底部向材质上渗出的暖光（"门一直在等你"） */
+.shop-visual::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+  height: 52%;
+  background: linear-gradient(180deg, transparent, rgba(255, 205, 175, .15));
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+/* 双按钮：主 CTA 进商店 + 描边次级入口（转化落点） */
+.shop-actions {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: clamp(14px, 2vw, 22px);
+  margin-top: 28px;
+}
+/* 文案列：纵向居中，标题加大、描述加宽，站在左侧暗部之上 */
+.shop-copy {
+  order: 1;
+  align-self: center;
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; justify-content: center;
+  padding-top: clamp(8px, 1vh, 16px);
+}
+.shop-copy h2 { font-size: clamp(2.5rem, 4.4vw, 4rem); }
+.shop-copy .shop-lead { max-width: 42ch; }
+.shop-copy > p:not(.eyebrow) { max-width: 42ch; margin: 24px 0; color: var(--muted); }
+.shop-copy small { display: block; margin-top: 20px; color: var(--muted); font-size: 11px; max-width: 42ch; }
+
+/* 等待的微光：文案与门扉之间的一粒暖光，缓慢呼吸——"它一直在等你" */
+.shop-waiting-light {
+  position: absolute; left: 50%; top: 58%;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--flash);
+  box-shadow: 0 0 14px 4px rgba(227, 169, 156, .5), 0 0 46px 14px rgba(227, 169, 156, .2);
+  transform: translateY(-50%);
+  animation: waiting-pulse 4.5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+/* 门下光池：门扉下方渗进房间的光（与 .shop-visual::after 呼应，让门"亮着"） */
+.shop-doorlight {
+  position: absolute; left: 42%; right: 0; z-index: 0;
+  bottom: clamp(44px, 6vh, 72px);
+  height: clamp(90px, 13vh, 160px);
+  background: radial-gradient(62% 100% at 58% 0%, rgba(255, 205, 175, .12), transparent 72%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+@keyframes waiting-pulse {
+  from { opacity: .45; transform: translateY(-50%) scale(.75); }
+  to { opacity: 1; transform: translateY(-50%) scale(1.3); }
+}
+/* 右缘题签：竖排章节标记，与首屏 DARKNESS 同一套题签语言（02 / 06 共用） */
+.act-meta {
+  position: absolute; right: clamp(14px, 2vw, 28px); top: 50%;
+  transform: translateY(-50%) rotate(180deg);
+  writing-mode: vertical-rl;
+  font-size: 9px; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   16. 商业页骨架
+   -------------------------------------------------------------------------- */
+.inner-page { min-height: 100vh; }
+.commerce-page, .product-page, .simple-page, .journal-page {
+  padding-block: clamp(56px, 7vw, 96px) clamp(88px, 10vw, 140px);
+}
+.page-title {
+  font-size: clamp(2.9rem, 7vw, 6.2rem);
+  line-height: .98; letter-spacing: -.015em;
+  max-width: min(760px, 100%);
+  white-space: pre-line;
+}
+.page-lead {
+  max-width: 40ch;
+  margin: clamp(20px, 2.6vw, 30px) 0 clamp(48px, 6vw, 72px);
+  color: var(--muted); font-size: 15px; line-height: 1.75;
+}
+.back-link {
+  display: block; width: max-content;
+  margin-top: 48px;
+  color: var(--muted); font-size: 13px; letter-spacing: .06em;
+  transition: color .3s;
+}
+.back-link:hover { color: var(--flash); }
+.demo-note { max-width: 44ch; margin-top: 24px; color: var(--muted); font-size: 11px; line-height: 1.7; }
+
+/* 错误页：品牌化 404 / 500 */
+.error-page__main {
+  min-height: 62vh;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  width: min(var(--content-max), calc(100% - var(--gutter) * 2));
+  margin-inline: auto;
+  padding-block: clamp(72px, 9vw, 120px);
+}
+.error-page__code {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 11rem);
+  line-height: 1;
+  color: rgba(227, 169, 156, .16);
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+.error-page__title {
+  font-size: clamp(2.4rem, 5.4vw, 4.4rem);
+  line-height: 1.02; letter-spacing: -.02em;
+  max-width: 20ch;
+}
+.error-page__body {
+  max-width: 44ch;
+  margin-top: clamp(18px, 2.6vw, 26px);
+  color: var(--muted); font-size: 15px; line-height: 1.75;
+}
+.error-page__actions {
+  display: flex; align-items: center; flex-wrap: wrap; gap: clamp(14px, 2vw, 22px);
+  margin-top: clamp(30px, 4vw, 44px);
+}
+
+/* 商店 */
+.filter-nav {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: clamp(36px, 5vw, 52px);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.filter-nav button {
+  min-height: 40px; padding: 0 18px;
+  border: 1px solid var(--line); border-radius: 999px;
+  color: var(--muted); font-size: 12px; letter-spacing: .12em;
+  transition: color .3s, border-color .3s, background .3s;
+}
+.filter-nav button:hover { color: var(--ivory); border-color: var(--line-strong); }
+.filter-nav button.is-active {
+  background: var(--flash); border-color: var(--flash);
+  color: var(--night); font-weight: 600;
+}
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+}
+.catalog-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--night-2);
+  border: 1px solid var(--line);
+  transition: transform .45s var(--ease), border-color .45s, box-shadow .45s;
+}
+.catalog-card:hover { transform: translateY(-6px); border-color: var(--line-strong); box-shadow: var(--shadow-1); }
+.catalog-image { aspect-ratio: 3 / 4; }
+.catalog-image img { opacity: .82; }
+.catalog-meta { padding: clamp(18px, 2vw, 24px); }
+.catalog-meta > span {
+  font-size: 9px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
+}
+.catalog-meta h2 {
+  margin: 12px 0 8px;
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+}
+.catalog-meta p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.catalog-meta strong { display: block; margin-top: 18px; color: var(--flash); font-size: 14px; letter-spacing: .04em; }
+.catalog-meta strong small { margin-left: 6px; color: var(--muted); font-weight: 400; font-size: 10px; text-transform: uppercase; letter-spacing: .14em; }
+
+/* 商品详情：竖版产品图 → 图/文对半 */
+.product-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(36px, 5vw, 80px);
+  align-items: start;
+}
+.product-detail-visual { aspect-ratio: 3 / 4; box-shadow: var(--shadow-2); }
+.product-detail-copy .eyebrow { margin-bottom: 14px; }
+.product-detail-copy h1 {
+  font-size: clamp(2.4rem, 4.6vw, 4.2rem);
+  line-height: 1;
+  margin-bottom: 20px;
+}
+.product-intro { max-width: 34ch; margin: 0 0 30px; color: var(--muted); font-size: 15px; line-height: 1.75; }
+.product-facts { border-top: 1px solid var(--line); margin-bottom: 30px; }
+.product-facts strong {
+  display: block; padding: 16px 0;
+  font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--flash);
+}
+.product-facts span {
+  display: block; padding: 15px 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 13px;
+}
+
+/* 购物袋 */
+.bag-lines { margin-top: 40px; }
+.bag-row {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 24px;
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+}
+.bag-row:last-of-type { border-bottom: 1px solid var(--line); }
+.bag-row > div { display: flex; align-items: center; gap: 20px; }
+.bag-row > div:first-child span { color: var(--muted); font-size: 13px; }
+.bag-row button { color: var(--muted); font-size: 12px; text-decoration: underline; transition: color .3s; }
+.bag-row button:hover { color: var(--flash); }
+.bag-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 26px 0 34px;
+  font-size: 16px;
+}
+.bag-total strong { font-size: 20px; color: var(--flash); }
+.empty-bag { margin-top: 48px; }
+.empty-bag p { margin-bottom: 28px; color: var(--muted); }
+
+/* 结账 */
+.demo-form { max-width: 460px; display: grid; gap: 26px; }
+.demo-form label {
+  display: grid; gap: 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--muted);
+}
+.demo-form input {
+  height: 52px; padding: 0 2px;
+  border: 0; border-bottom: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ivory); font-size: 16px;
+  transition: border-color .3s;
+}
+.demo-form input:focus { outline: none; border-color: var(--flash); }
+.demo-form input::placeholder { color: var(--muted); }
+.demo-form .primary-button { justify-self: start; margin-top: 8px; }
+.success-state {
+  padding: 36px 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.success-state h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+.success-state p { margin: 0 0 28px; color: var(--muted); }
+
+/* 手记列表与正文 */
+.journal-grid {
+  display: grid;
+  gap: clamp(16px, 2vw, 28px);
+  margin-top: clamp(36px, 5vw, 56px);
+}
+.journal-entry {
+  display: grid; gap: 10px;
+  padding: clamp(24px, 3vw, 36px);
+  border-top: 1px solid var(--line);
+  transition: background .4s, padding-left .4s;
+}
+.journal-entry:hover { background: var(--night-2); padding-left: clamp(32px, 4vw, 48px); }
+.journal-entry > p { font-size: 12px; color: var(--flash); letter-spacing: .2em; }
+.journal-entry h2 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  line-height: 1.05;
+}
+.journal-entry span { color: var(--muted); font-size: 13px; max-width: 48ch; }
+.journal-entry a {
+  margin-top: 8px; width: max-content;
+  color: var(--muted); font-size: 12px; letter-spacing: .08em;
+  border-bottom: 1px solid transparent;
+  transition: color .3s, border-color .3s;
+}
+.journal-entry a:hover { color: var(--flash); border-color: var(--flash); }
+.article-body {
+  max-width: 62ch;
+  margin-top: clamp(32px, 5vw, 56px);
+  color: var(--muted); font-size: 17px; line-height: 1.9;
+}
+
+/* --------------------------------------------------------------------------
+   17. Footer
+   -------------------------------------------------------------------------- */
+/* 页脚：全宽深酒红底收束 —— 大衬线品牌句 + 导航列 + 版权行 */
+.commerce-footer {
+  width: 100%;
+  background: var(--wine);
+  border-top: 1px solid var(--line);
+  padding-block: clamp(64px, 7vw, 96px) 28px;
+}
+.footer-inner {
+  width: min(var(--content-max), calc(100% - var(--gutter) * 2));
+  margin-inline: auto;
+}
+/* 品牌收束句：一屏收住记忆的大衬线标语 */
+.footer-closing {
+  font-family: var(--font-display); font-weight: 400; font-style: italic;
+  font-size: clamp(2.1rem, 4.8vw, 3.8rem);
+  line-height: 1.12; letter-spacing: -.01em;
+  color: var(--ivory);
+  max-width: 22ch;
+  margin-bottom: clamp(40px, 5vw, 64px);
+  padding-bottom: clamp(28px, 4vw, 44px);
+  border-bottom: 1px solid var(--line);
+}
+.footer-brand { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; }
+.footer-brand .wordmark { font-size: 13px; }
+.footer-brand p { max-width: 300px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(24px, 4vw, 48px);
+  margin-top: clamp(44px, 5vw, 64px);
+}
+.footer-columns h2 {
+  margin: 0 0 16px;
+  font-size: 10px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--flash);
+}
+.footer-columns a { display: block; width: max-content; margin: 8px 0; color: var(--muted); font-size: 12px; transition: color .3s; }
+.footer-columns a:hover { color: var(--ivory); }
+.footer-bottom {
+  display: flex; justify-content: space-between; gap: 20px;
+  margin-top: clamp(40px, 5vw, 56px);
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 11px; letter-spacing: .06em;
+}
+.footer-bottom a:hover { color: var(--flash); }
+
+/* --------------------------------------------------------------------------
+   18. 响应式 · 平板（≤960px）
+   -------------------------------------------------------------------------- */
+@media (max-width: 960px) {
+  .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .product-page { grid-template-columns: minmax(0, 1fr); }
+  .product-detail-copy { margin-top: 36px; }
+  /* 图左文右的幕 */
+  .body-touch {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 56px);
+  }
+  /* 文左图右的幕 */
+  .relationship {
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    gap: clamp(32px, 5vw, 56px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   19. 响应式 · 移动端（≤700px）
+   -------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .section-frame, .footer-inner { width: calc(100% - 40px); }
+  .site-header { width: calc(100% - 24px); min-height: 48px; gap: 8px; padding-left: 16px; }
+  .desktop-nav { display: none; }
+  .language-button { margin-left: auto; }
+  .menu-button { display: flex; }
+  .mobile-nav {
+    position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+    display: flex; flex-direction: column;
+    padding: 14px 20px 20px;
+    background: rgba(31, 24, 27, .97);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow-1);
+  }
+  .mobile-nav a {
+    padding: 14px 4px;
+    font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+  }
+  .mobile-nav a:hover { color: var(--ivory); }
+
+  /* Hero：全屏沉浸，触屏无 hover 影像常显，大字题签在偏左中央 */
+  .desire-hero { height: 100svh; }
+  .hero-bg { opacity: .66; filter: brightness(.84) saturate(.82) blur(0); }
+  .hero-copy { left: 20px; right: 20px; bottom: clamp(84px, 16vh, 128px); }
+  .hero-copy h1 { font-size: clamp(3.1rem, 16.5vw, 5rem); }
+  .hero-lead { font-size: 14px; }
+  .hero-label { top: calc(10px + 48px + 14px); right: 20px; }
+  .scroll-note { left: 50%; transform: translateX(-50%); right: auto; bottom: 20px; }
+
+  /* 章节全部改为单列堆叠：文案在上、图形在下 */
+  .body-touch, .relationship, .trust-section, .journal, .shop-reveal {
+    display: block;
+    height: auto;
+    padding-block: 72px 80px;
+  }
+  /* 02/06 幕：移动端恢复左右边距（影像不再出血），还原整幅圆角面板 */
+  .body-touch, .shop-reveal { padding-inline: var(--gutter); }
+  .touch-lens, .shop-visual {
+    width: 100%; height: auto;
+    aspect-ratio: 4 / 3;
+    margin-top: 28px;
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 1px 0 rgba(243, 236, 227, .1), 0 0 0 1px rgba(243, 236, 227, .045), 0 18px 60px rgba(0, 0, 0, .16);
+    -webkit-mask-image: none; mask-image: none;
+  }
+  .shop-visual { aspect-ratio: 3 / 2; }
+  .relationship-stage, .journal-card { margin-top: 36px; }
+  .touch-copy h2 { max-width: 13ch; }
+
+  /* 第三幕：移动端影像横幅全宽（无内边距），文字改为影像下方独立显示（可读性优先） */
+  .scenes { height: auto; min-height: 0; padding-block: var(--section-space); }
+  .scene-visual { flex: none; aspect-ratio: 4 / 3.4; }
+  .scene-copy {
+    position: static;
+    max-width: none;
+    margin-top: 28px;
+    padding-inline: var(--gutter);
+  }
+
+  /* 第四幕：全宽波形保留，标题居中于波形上方 */
+  .peak-section { height: auto; min-height: 0; padding-block: var(--section-space) 0; }
+  .peak-copy { max-width: none; }
+  .wave-stage { position: static; height: 200px; margin-top: 44px; }
+  .wave-hint { position: static; transform: none; width: max-content; margin: 18px auto 0; }
+
+  /* 第五幕：欲望之核居中缩小（按 1.3× 比例放大到 310px） */
+  .want-section { height: auto; min-height: 0; padding-block: var(--section-space); }
+  .want-object { width: min(310px, 64vw); }
+  .want-copy { margin-top: 36px; }
+
+  /* 第六幕：文案在上、影像在下（DOM 顺序已为文案优先） */
+  .shop-copy { order: 0; }
+
+  /* 移动端单列堆叠无"右侧空白"问题，隐藏桌面装饰元素 */
+  .act-meta, .shop-waiting-light, .touch-halo, .shop-doorlight { display: none; }
+
+  .relationship-stage, .product-detail-visual { aspect-ratio: 3 / 4; }
+  .trust-section { width: 100%; padding-inline: var(--gutter); padding-block: var(--section-space); }
+  .trust-list { margin-top: 40px; }
+
+  /* 商业页 */
+  .catalog-grid { grid-template-columns: 1fr; }
+  .catalog-image { aspect-ratio: 3 / 4; }
+  .bag-row { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .footer-columns { grid-template-columns: repeat(2, 1fr); }
+  .footer-bottom { flex-direction: column; gap: 12px; }
+}
+
+/* 触屏设备无 hover：Hero 影像与触碰光效常显，避免停留在黑暗里 */
+@media (hover: none) {
+  .hero-bg { opacity: .66; filter: brightness(.84) saturate(.82) blur(0); }
+  .touch-lens img { filter: saturate(.92) contrast(1.16) brightness(1.08); }
+}
+
+/* 矮屏笔记本保护：内容仍精确一屏，字号/间距/图形按比例收紧，避免裁切
+   （.scenes 全幅影像不参与 padding，保持满屏） */
+@media (min-width: 701px) and (max-height: 720px) {
+  .desire-hero, .body-touch, .peak-section, .want-section, .shop-reveal {
+    padding-block: clamp(28px, 4vh, 44px);
+  }
+  .hero-copy h1 { font-size: clamp(2.4rem, 5vw, 4.6rem); }
+  .hero-lead { margin-top: 16px; }
+  .body-touch h2, .relationship h2, .peak-section h2, .scenes h2,
+  .trust-section h2, .journal h2, .shop-copy h2 {
+    font-size: clamp(1.7rem, 3vw, 2.5rem);
+  }
+  .want-copy h2 { font-size: clamp(2.2rem, 4vw, 3.5rem); }
+  .scene-copy h2 { font-size: clamp(1.6rem, 2.6vw, 2.3rem); }
+  .eyebrow { margin-bottom: 12px; }
+  .touch-copy > p:last-child, .want-copy > p:not(.eyebrow),
+  .relationship-heading > p:last-child, .peak-body { margin-top: 14px; }
+  .touch-lens, .shop-visual { height: clamp(320px, 62vh, 540px); }
+  .want-object { width: min(280px, 36vh, 52vw); }
+  .want-copy { margin-top: 20px; }
+  .wave-stage { height: 46%; }
+}
+
+/* --------------------------------------------------------------------------
+   21. 质感与滚动叙事升级
+   -------------------------------------------------------------------------- */
+/* 胶片颗粒：全屏极轻噪点，统一材质感 */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 70;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .05;
+  mix-blend-mode: overlay;
+}
+
+/* 幕编号：超大衬线数字作为背景装饰 */
+.body-touch, .shop-reveal { position: relative; }
+[data-act]::before {
+  content: attr(data-act);
+  position: absolute; z-index: 0;
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(9rem, 22vw, 20rem);
+  line-height: 1;
+  color: rgba(227, 169, 156, .06);
+  pointer-events: none; user-select: none;
+}
+[data-act="01"]::before { left: -1%; top: 4%; }
+/* 02/03 的大编号原在右侧，与章节导航同侧造成"割裂"，统一移到左侧 */
+[data-act="02"]::before { left: -1%; bottom: 2%; }
+[data-act="03"]::before { left: 4%; top: 6%; }
+[data-act="04"]::before { left: -1%; bottom: 6%; }
+[data-act="05"]::before { display: none; }
+[data-act="06"]::before { left: 5%; top: 8%; }
+.scenes, .peak-section, .want-section { position: relative; }
+
+/* 幕间过渡：光的缝合线 —— 两幕边界不再是一根生硬横线，
+   而是一道横向渐变微光（中亮两侧暗），缓慢呼吸 + 一圈光晕，
+   像是光线从上一幕流淌进下一幕（reduced-motion 下保持静态可见） */
+[data-act]::after {
+  content: ""; position: absolute; top: -1px; left: 0; right: 0;
+  height: 3px; z-index: 2;
+  background: linear-gradient(90deg, transparent 4%, rgba(227, 169, 156, .34) 50%, transparent 96%);
+  box-shadow: 0 0 26px -6px rgba(227, 169, 156, .4), 0 0 70px -18px rgba(227, 169, 156, .3);
+  opacity: .7;
+  animation: seam-breathe 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes seam-breathe {
+  from { opacity: .4; }
+  to { opacity: .95; }
+}
+
+/* 面板光边：顶部一条微光，提升材质感（商业卡片保留悬浮阴影） */
+.scene-visual, .relationship-stage, .catalog-card,
+.product-detail-visual, .wave-stage, .journal-card {
+  box-shadow: inset 0 1px 0 rgba(243, 236, 227, .09), var(--shadow-1);
+}
+.relationship-stage, .product-detail-visual { box-shadow: inset 0 1px 0 rgba(243, 236, 227, .09), var(--shadow-2); }
+
+/* 首页幕面板"去卡片感"：去掉悬浮阴影，改为一圈微光描边 + 轻压暗
+   —— 像从黑暗里亮起的取景窗，而不是贴在画布上的卡片
+   （02/06 幕已改为全幅浮现式面板，见各自章节，不再参与） */
+.scene-visual {
+  box-shadow:
+    inset 0 1px 0 rgba(243, 236, 227, .1),
+    0 0 0 1px rgba(243, 236, 227, .045),
+    0 18px 60px rgba(0, 0, 0, .16);
+}
+
+/* 主按钮：hover 高光扫过 */
+.primary-button { position: relative; overflow: hidden; }
+.primary-button::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(22, 16, 19, .22) 50%, transparent 70%);
+  transform: translateX(-130%);
+  transition: transform .7s var(--ease);
+  pointer-events: none;
+}
+.primary-button:hover::after { transform: translateX(130%); }
+
+/* 全局光线旅程：一束暖光随滚动贯穿六幕 —— 连续转场的核心 */
+:root { --scroll-progress: 0; }
+body::before {
+  content: "";
+  position: fixed; inset: 0; z-index: 30;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(58% 42% at 50% calc(var(--scroll-progress) * 100%), rgba(232, 164, 140, .15), transparent 68%),
+    radial-gradient(34% 26% at 50% calc(var(--scroll-progress) * 100% + 16%), rgba(255, 150, 110, .09), transparent 65%);
+  animation: journey-breathe 11s ease-in-out infinite alternate;
+}
+@keyframes journey-breathe {
+  from { opacity: .7; }
+  to { opacity: 1; }
+}
+
+/* 暗部流动：site-shell 的背景光斑极慢漂移，让黑暗不是静止的 */
+.site-shell {
+  background:
+    radial-gradient(900px 130% at 0% 50%, rgba(126, 47, 46, .16), transparent 70%),
+    radial-gradient(700px 130% at 100% 50%, rgba(227, 169, 156, .08), transparent 70%),
+    radial-gradient(1100px 560px at 88% -12%, rgba(126, 47, 46, .17), transparent 62%),
+    radial-gradient(820px 480px at -8% 32%, rgba(44, 21, 27, .5), transparent 64%),
+    var(--night);
+  animation: shell-drift 26s ease-in-out infinite alternate;
+}
+@keyframes shell-drift {
+  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: 3% 0, -3% 0, 6% 4%, -4% -3%, 0 0; }
+}
+
+/* 呼吸：各面板光晕的缓慢起伏（微光脉动，非位移） */
+.touch-lens::after, .scene-visual::before {
+  animation: panel-breathe 7s ease-in-out infinite alternate;
+}
+@keyframes panel-breathe {
+  from { opacity: .78; }
+  to { opacity: 1; }
+}
+
+/* 章节导航（触发式）：静止态完全透明、不拦截指针，不遮挡背景、不挤压任何空间；
+   鼠标靠近右缘热区 / 悬停导航 / 键盘聚焦时才浮现（纯 fixed 悬浮） */
+.chapter-nav {
+  position: fixed; right: clamp(8px, 1.2vw, 16px); top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: flex; align-items: center; gap: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .45s var(--ease);
+}
+.chapter-nav.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* 触发热区：右缘 36px 隐形竖条，仅用于感知鼠标靠近 */
+.chapter-nav-zone {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 36px;
+  z-index: 39;
+}
+/* 进度轨：1px 发丝线 + 六幕光点，当前幕高亮发光 */
+.chapter-nav__rail {
+  position: relative;
+  width: 16px;
+  height: clamp(220px, 42vh, 380px);
+}
+.chapter-nav__rail-line {
+  position: absolute; top: 10px; bottom: 10px; left: 50%;
+  width: 1px; transform: translateX(-50%);
+  background: linear-gradient(180deg, transparent, rgba(243, 236, 227, .3), transparent);
+}
+.chapter-nav__rail-dot {
+  position: absolute; left: 50%;
+  top: calc(10px + (100% - 20px) * (var(--rail-i) / 5));
+  width: 3px; height: 3px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(243, 236, 227, .34);
+  transition: background .4s, box-shadow .4s, width .4s, height .4s;
+}
+.chapter-nav__rail-dot.is-active {
+  width: 7px; height: 7px;
+  background: var(--flash);
+  box-shadow: 0 0 12px 3px rgba(227, 169, 156, .55);
+}
+/* 悬浮展开态：毛玻璃面板从右缘滑入，浮于内容之上。
+   折叠时 max-width:0 + overflow:hidden 裁掉全部可点击区域（配合 nav 层 pointer-events:none 不拦截） */
+.chapter-nav__list {
+  display: flex; flex-direction: column; gap: 2px;
+  max-width: 0; overflow: hidden;
+  opacity: 0;
+  transform: translateX(8px);
+  padding: 0;
+  border-radius: 10px;
+  background: rgba(22, 16, 19, .58);
+  backdrop-filter: blur(14px) saturate(1.1); -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid rgba(243, 236, 227, .1);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .38);
+  transition: max-width .5s var(--ease), opacity .4s var(--ease),
+    transform .5s var(--ease), padding .4s var(--ease);
+}
+.chapter-nav__list.is-open {
+  max-width: 190px; opacity: 1; transform: none;
+  padding: 6px;
+}
+.chapter-nav__list button {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px 8px 8px;
+  white-space: nowrap;
+  color: var(--muted); font-size: 11px; letter-spacing: .1em;
+  opacity: .7; border-radius: 6px;
+  transition: opacity .3s, color .3s, background .3s, padding-left .3s;
+}
+.chapter-nav__list button:hover { opacity: 1; color: var(--ivory); background: rgba(243, 236, 227, .06); padding-left: 12px; }
+.chapter-nav__list button.is-active { opacity: 1; color: var(--flash); }
+.chapter-nav__list .chapter-nav__num { font-family: var(--font-display); font-size: 12px; }
+.chapter-nav__list .chapter-nav__name { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+
+/* 移动端：章节导航退成底部细线进度 + 当前章节痕迹 */
+.mobile-progress {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+  height: 2px; background: rgba(243, 236, 227, .12);
+}
+.mobile-progress__fill {
+  display: block; height: 100%;
+  width: calc(var(--scroll-progress, 0) * 100%);
+  background: linear-gradient(90deg, var(--cherry), var(--flash));
+  transition: width .1s linear;
+}
+.mobile-progress__tag {
+  position: absolute; right: 14px; bottom: 10px;
+  font-size: 9px; letter-spacing: .22em; color: var(--muted);
+}
+@media (min-width: 961px) { .mobile-progress { display: none; } }
+@media (max-width: 960px) { .chapter-nav, .chapter-nav-zone { display: none; } }
+
+/* --------------------------------------------------------------------------
+   20. 动效偏好
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .journal-card:hover, .catalog-card:hover { transform: none; }
+  .touch-lens:hover img, .catalog-card:hover .catalog-image img,
+  .scene-visual:hover img, .scene-visual:hover::after,
+  .desire-hero:hover .hero-bg, .hero-visual:focus-within .hero-bg { opacity: .46; filter: brightness(.68) saturate(.74) blur(5px); }
+  .relationship-stage:hover .relationship-half--alone,
+  .relationship-stage:hover .relationship-half--together { flex: 1; filter: none; }
+  .relationship-stage:hover .relationship-beam { left: 50%; }
+  /* 感官标签与节奏引导不依赖 hover/动效：reduced-motion 下直接可见 */
+  .sensory-labels span { opacity: 1; transform: none; }
+  .wave-stage i { height: calc(18px + var(--wave-index) * 9px); filter: none; }
+  .want-object { transform: none; }
+}

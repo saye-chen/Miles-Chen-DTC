@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 演示 sitemap：正式域名确认后替换 host 与 robots.txt 中的站点地址 -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mileschen.example.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://mileschen.example.com/shop</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mileschen.example.com/product/the-object</loc><priority>0.7</priority></url>
+  <url><loc>https://mileschen.example.com/product/the-distance</loc><priority>0.7</priority></url>
+  <url><loc>https://mileschen.example.com/product/the-pair</loc><priority>0.7</priority></url>
+  <url><loc>https://mileschen.example.com/journal</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://mileschen.example.com/journal/1</loc><priority>0.5</priority></url>
+  <url><loc>https://mileschen.example.com/journal/2</loc><priority>0.5</priority></url>
+  <url><loc>https://mileschen.example.com/journal/3</loc><priority>0.5</priority></url>
+  <url><loc>https://mileschen.example.com/faq</loc><priority>0.3</priority></url>
+  <url><loc>https://mileschen.example.com/shipping</loc><priority>0.3</priority></url>
+  <url><loc>https://mileschen.example.com/returns</loc><priority>0.3</priority></url>
+  <url><loc>https://mileschen.example.com/contact</loc><priority>0.3</priority></url>
+  <url><loc>https://mileschen.example.com/privacy</loc><priority>0.3</priority></url>
+  <url><loc>https://mileschen.example.com/terms</loc><priority>0.3</priority></url>
+</urlset>

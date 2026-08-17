@@ -22,3 +22,17 @@ logs
 .env
 .env.*
 !.env.example
+
+# pnpm store cache
+.pnpm-store
+
+# 沙箱环境 corepack 缓存（本机由系统 pnpm 提供，无需入库）
+.corepack
+
+# Playwright 输出
+test-results
+playwright-report
+
+# 审计截图与本地临时产物
+.audit
+--host

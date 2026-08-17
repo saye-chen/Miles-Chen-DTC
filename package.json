@@ -7,17 +7,19 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "optimize:images": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
     "gsap": "3.15.0",
     "nuxt": "^3.21.11",
     "vue": "^3.5.40",
-    "vue-router": "^5.2.0"
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "4.3.3",
+    "sharp": "^0.35.3",
     "tailwindcss": "4.3.3",
     "typescript": "~5.9.3"
   }

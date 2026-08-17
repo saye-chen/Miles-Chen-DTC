@@ -1,2 +1,5 @@
 User-Agent: *
 Disallow:
+
+# 演示 sitemap；正式域名确认后替换为真实站点地址
+Sitemap: https://mileschen.example.com/sitemap.xml
