@@ -6,6 +6,10 @@
 | --- | --- | --- |
 | `pexels-17101140-original.jpg` | Act 06 主视觉下载原图（处理后为 `pexels-six-afterglow-v1`） | `external: Pexels 17101140`, `license: verify before production` |
 | `pexels-act05-black-lingerie-original.jpg` | Act 05 主视觉下载原图（处理后为 `pexels-act05-black-lingerie-v1`） | `external: Pexels 10670470`, `license: verify before production` |
+| `pexels-six-afterglow-v1-master-v1.png` | Act 06 调色前母版快照（纯黑背景未暖化，留档备查） | 处理母版，非页面运行资源 |
+| `skin-touch-v2-master-v1.png` | Act 02 调色前母版快照（过暗版本，留档备查） | 处理母版，非页面运行资源 |
+| `unsplash-hand-waist-original.jpg` | Act 02 开发阶段下载原图（处理后为 `unsplash-hand-waist-v1`） | `external: Unsplash photo page IayAKmaZ67E`, `license: verify before production`, `model/property rights: verify before production` |
 
 > 说明：处理后的 PNG 母版即父目录中被页面引用的同名 PNG（同时充当 `<picture>` 回退源），不再在 `originals/` 重复存放。
+> `*-master-v1.png` 为 2025-08 视觉调优前的留档快照，仅用于比对，不参与构建。
 > 正式商业发布前需重新核对 Pexels 许可与模特肖像权。

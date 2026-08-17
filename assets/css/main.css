@@ -369,9 +369,9 @@ main:focus { outline: none; }
   width: 100%;
   margin-top: clamp(24px, 3.5vh, 44px);
   display: grid;
-  /* 不对称舞台：文案列（0.85fr）+ 热源影像列（1.15fr，铺满右缘） */
-  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-  gap: clamp(40px, 5vw, 80px);
+  /* 同一张横向画面里的暗部文案 + 右侧腰部主视觉，主体落在约 78% 处。 */
+  grid-template-columns: minmax(280px, .62fr) minmax(0, 1.38fr);
+  gap: clamp(24px, 3vw, 52px);
   align-items: center;
   min-height: calc(100svh - var(--header-h));
   height: auto;
@@ -387,19 +387,11 @@ main:focus { outline: none; }
 .touch-lens {
   order: 2;
   position: relative;
-  height: min(74vh, 660px);
+  height: min(82vh, 760px);
   border-radius: 0;
   box-shadow: none;
   overflow: hidden;
   background: transparent;
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0%, #000 26%, #000 92%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(90deg, transparent 0%, #000 26%, #000 92%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
-  mask-composite: intersect;
 }
 /* 文案列：纵向居中，站在左侧暗部之上 */
 .touch-copy {
@@ -407,9 +399,10 @@ main:focus { outline: none; }
   align-self: center;
   position: relative; z-index: 1;
   display: flex; flex-direction: column; justify-content: center;
+  max-width: min(720px, 100%);
   padding-top: clamp(8px, 1vh, 16px);
 }
-.touch-lens img { min-height: 100%; opacity: .9; object-position: 50% 42%; filter: saturate(.82) contrast(1.14) brightness(1.03) sepia(.08); }
+.touch-lens img { min-height: 100%; opacity: .9; object-position: 54% 48%; filter: saturate(.82) contrast(1.14) brightness(1.03) sepia(.08); }
 /* 热源光斑：指针靠近时体温光跟随（--pointer-x/y），按下/触摸升温（--heat），
    与首页触碰机制同款；无指针时保持中央缓慢呼吸 */
 .touch-lens::before {
@@ -432,15 +425,22 @@ main:focus { outline: none; }
 }
 .lens-ring {
   position: absolute; z-index: 2;
-  width: clamp(140px, 18vw, 220px); aspect-ratio: 1;
-  left: 50%; top: 50%;
+  width: clamp(150px, 20vw, 260px); aspect-ratio: 1;
+  left: 63%; top: 55%;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(243, 236, 227, .4); border-radius: 50%;
+  border: 1px solid rgba(243, 236, 227, .34); border-radius: 50%;
   box-shadow: 0 0 42px rgba(227, 169, 156, .28), inset 0 0 30px rgba(227, 169, 156, .16);
   transition: transform 1s var(--ease);
   pointer-events: none;
 }
 .touch-lens:hover .lens-ring { transform: translate(-50%, -50%) scale(1.3); }
+.touch-body-copy {
+  max-width: 48ch;
+  margin-top: clamp(18px, 2.6vh, 30px);
+  color: #c4b5ad;
+  font-size: clamp(14px, 1.2vw, 17px);
+  line-height: 1.85;
+}
 .touch-label {
   position: absolute; top: 20px; right: 20px; z-index: 1;
   font-size: 9px; letter-spacing: .22em; color: var(--muted);
@@ -478,6 +478,20 @@ main:focus { outline: none; }
     radial-gradient(30% 52% at 58% 50%, rgba(126, 47, 46, .24), transparent 72%);
   mix-blend-mode: screen;
   animation: halo-breathe 7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+/* 第二幕中段连接层：把文字区的暗部自然引向右侧热源，不增加新的卡片。 */
+.body-touch::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 40%;
+  top: 52%;
+  width: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(227, 169, 156, .34), transparent);
+  box-shadow: 0 0 24px rgba(227, 169, 156, .2);
   pointer-events: none;
 }
 
@@ -845,14 +859,6 @@ main:focus { outline: none; }
   box-shadow: none;
   overflow: hidden;
   background: transparent;
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0%, #000 17%, #000 78%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, #000 11%, #000 88%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(90deg, transparent 0%, #000 17%, #000 78%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, #000 11%, #000 88%, transparent 100%);
-  mask-composite: intersect;
 }
 /* 材质主视觉：真实质感底层（概念演示素材）+ 底部渐变压暗保证标签可读 */
 .shop-material-img {
@@ -865,11 +871,6 @@ main:focus { outline: none; }
 .shop-visual:hover .shop-material-img { transform: scale(1.05); }
 .shop-visual-scrim {
   position: absolute; inset: 0; z-index: 1;
-  background:
-    linear-gradient(90deg, rgba(22, 16, 19, .76) 0%, rgba(22, 16, 19, .2) 24%, transparent 52%),
-    linear-gradient(180deg, rgba(22, 16, 19, .3) 0%, transparent 28%, transparent 70%, rgba(22, 16, 19, .62) 100%),
-    linear-gradient(90deg, transparent 70%, rgba(22, 16, 19, .24) 100%),
-    radial-gradient(54% 72% at 70% 36%, rgba(227, 169, 156, .1), transparent 72%);
   pointer-events: none;
 }
 .shop-visual-label {
@@ -1343,10 +1344,253 @@ main:focus { outline: none; }
   .footer-bottom { flex-direction: column; gap: 12px; }
 }
 
+/* 第二幕：把热源从右侧边缘拉回页面空间，保留手部与身体的完整关系。 */
+@media (min-width: 701px) {
+  .body-touch {
+    grid-template-columns: minmax(300px, .62fr) minmax(0, 1.38fr);
+    gap: clamp(24px, 3vw, 52px);
+  }
+
+  .touch-lens {
+    width: calc(100% - clamp(18px, 3vw, 44px));
+    margin-left: 0;
+    margin-right: clamp(18px, 3vw, 44px);
+  }
+
+  .touch-lens img { object-position: 54% 48%; }
+  .lens-ring { box-shadow: 0 0 34px rgba(227, 169, 156, .24), inset 0 0 24px rgba(227, 169, 156, .12); }
+  .sensory-labels { bottom: 24px; opacity: .82; }
+}
+
+/* 第六幕：缩小右侧素材的压迫感，减少上下模糊，让人物轮廓自然落在空间里。 */
+@media (min-width: 701px) {
+  .shop-reveal {
+    grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+    gap: clamp(28px, 4vw, 64px);
+  }
+
+  .shop-visual {
+    width: 106%;
+    margin-left: -3%;
+    height: min(76vh, 700px);
+  }
+
+  .shop-reveal::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(38% 48% at 66% 50%, rgba(227, 169, 156, .08), transparent 72%);
+    pointer-events: none;
+  }
+}
+
+/* 02/06 幕 · 统一视觉语言：保留原始照片质感，只用暗部遮罩和色调统一融入页面。 */
+.body-touch .touch-lens {
+  overflow: visible;
+  background:
+    radial-gradient(ellipse at 72% 50%, rgba(151, 76, 63, .22), transparent 58%),
+    radial-gradient(ellipse at 48% 50%, rgba(91, 42, 39, .18), transparent 72%);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+@media (min-width: 701px) {
+  .body-touch .touch-copy {
+    max-width: min(720px, 100%);
+  }
+
+  .body-touch .touch-copy h2 {
+    max-width: 18ch;
+  }
+}
+
+.shop-reveal .shop-visual {
+  background: radial-gradient(ellipse at 60% 48%, rgba(130, 61, 52, .2), transparent 64%);
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.98) 8%, #000 18%, #000 90%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.98) 6%, #000 14%, #000 90%, transparent 100%);
+  mask-image:
+    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.98) 8%, #000 18%, #000 90%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.98) 6%, #000 14%, #000 90%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* 影像本体：使用原始照片，避免透明剪影和高亮色块破坏身体质感。 */
+.body-touch .touch-lens img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right center;
+  opacity: .72;
+  mix-blend-mode: multiply;
+  filter: saturate(.82) contrast(1.04) brightness(1.12) sepia(.08);
+  transform: none;
+}
+
+/* Act 02 开发素材：真实手部与腰部靠右呈现，边缘渐隐到暖暗背景。 */
+.body-touch .touch-waist-img {
+  opacity: 1;
+  mix-blend-mode: normal;
+  filter: none;
+  object-position: right center;
+  transform: none;
+}
+
+.shop-reveal .shop-material-img {
+  opacity: .96;
+  mix-blend-mode: screen;
+  filter: saturate(1) contrast(1.06) brightness(1.06) sepia(.1);
+  object-position: 58% 48%;
+}
+
+/* 底部轻压暗：仅保证标签可读，不再做大幅暗角 */
+.body-touch .touch-lens::after {
+  z-index: 2;
+  background:
+    linear-gradient(90deg, rgba(35, 14, 18, .46), transparent 16%, transparent 82%, rgba(35, 14, 18, .34)),
+    linear-gradient(180deg, rgba(35, 14, 18, .2), transparent 18%, transparent 80%, rgba(35, 14, 18, .42));
+}
+
+.body-touch .sensory-labels {
+  z-index: 3;
+  color: rgba(243, 236, 227, .82);
+  text-shadow: 0 1px 12px rgba(24, 10, 14, .9);
+}
+
+.shop-reveal .shop-visual-scrim {
+  background:
+    linear-gradient(90deg, rgba(28, 11, 15, .04), transparent 28%, transparent 86%, rgba(28, 11, 15, .08)),
+    linear-gradient(180deg, rgba(28, 11, 15, .02), transparent 20%, transparent 84%, rgba(28, 11, 15, .08));
+}
+
+@media (max-width: 700px) {
+  .touch-lens img { object-position: 54% 48%; }
+}
+
+/* --------------------------------------------------------------------------
+   24. 首页 · 桌面端一屏一幕
+   --------------------------------------------------------------------------
+   section 的 padding 已包含在 box-sizing:border-box 内；取消额外幕间高度，
+   让每个沉浸幕严格占满一个视口，移动端仍由上一段的流式规则接管。
+*/
+@media (min-width: 701px) {
+  .desire-hero,
+  .body-touch,
+  .scenes,
+  .peak-section,
+  .want-section,
+  .shop-reveal {
+    height: 100svh;
+    min-height: 100svh;
+    margin-top: 0;
+  }
+
+  .scenes,
+  .peak-section,
+  .want-section,
+  .shop-reveal {
+    height: 100svh;
+  }
+
+  .body-touch,
+  .shop-reveal {
+    padding-top: clamp(72px, 10vh, 120px);
+    padding-bottom: clamp(56px, 8vh, 96px);
+  }
+
+  .scenes { padding-block: 0; }
+  .peak-section { padding-block: 0; }
+  .want-section { padding-block: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   23. 首页 · 重新拉开六幕构图
+   --------------------------------------------------------------------------
+   装饰系统保留；移除大号章节数字，避免它们与标题争夺注意力。
+*/
+[data-act]::before { display: none; }
+
+.desire-hero {
+  min-height: 720px;
+}
+.hero-copy {
+  top: 41%;
+  bottom: auto;
+  transform: translateY(-18%);
+  max-width: 680px;
+}
+.hero-copy h1 { font-size: clamp(4.4rem, 9.4vw, 9.2rem); }
+.hero-copy .eyebrow { margin-bottom: 20px; }
+
+.body-touch {
+  min-height: 100svh;
+  padding-top: clamp(90px, 13vh, 150px);
+  padding-bottom: clamp(72px, 10vh, 120px);
+}
+.touch-copy {
+  max-width: 440px;
+  padding-left: clamp(10px, 2vw, 28px);
+}
+.touch-copy h2 { max-width: 10ch; }
+.touch-lens { height: min(78vh, 720px); }
+
+.scenes {
+  height: min(108svh, 980px);
+  margin-top: clamp(36px, 6vh, 80px);
+}
+.scene-copy {
+  left: clamp(28px, 7vw, 110px);
+  bottom: clamp(52px, 10vh, 120px);
+  max-width: 470px;
+  padding: 24px 28px 22px;
+  background: linear-gradient(90deg, rgba(22, 16, 19, .54), transparent);
+}
+.scene-copy h2 { font-size: clamp(2.2rem, 4vw, 3.8rem); }
+
+.peak-section {
+  min-height: min(112svh, 1020px);
+  margin-top: clamp(36px, 6vh, 80px);
+}
+.peak-copy { transform: translateY(-12%); }
+.peak-copy h2 { font-size: clamp(2.8rem, 5vw, 5rem); }
+.wave-stage { height: 58%; }
+
+.want-section {
+  min-height: min(108svh, 980px);
+  margin-top: clamp(36px, 6vh, 80px);
+}
+.want-copy { max-width: 620px; margin-top: 0; }
+.want-copy h2 { font-size: clamp(3.2rem, 6vw, 6rem); }
+
+.shop-reveal {
+  min-height: min(108svh, 980px);
+  margin-top: clamp(36px, 6vh, 80px);
+  padding-top: clamp(80px, 12vh, 140px);
+  padding-bottom: clamp(72px, 10vh, 120px);
+}
+.shop-copy h2 { font-size: clamp(3rem, 5vw, 5rem); }
+.shop-actions .primary-button { min-height: 56px; padding-inline: 28px; }
+
+@media (max-width: 700px) {
+  .desire-hero { min-height: 100svh; }
+  .hero-copy {
+    top: auto;
+    bottom: clamp(84px, 16vh, 128px);
+    transform: none;
+  }
+  .hero-copy h1 { font-size: clamp(3.3rem, 17vw, 5.2rem); }
+  .touch-copy { padding-left: 0; }
+  .scenes { height: auto; min-height: 0; margin-top: 0; }
+  .scene-copy { padding: 0; background: none; }
+  .peak-section, .want-section, .shop-reveal { min-height: 0; margin-top: 0; }
+  .peak-copy { transform: none; }
+}
+
 /* 触屏设备无 hover：Hero 影像与触碰光效常显，避免停留在黑暗里 */
 @media (hover: none) {
   .hero-bg { opacity: .66; filter: brightness(.84) saturate(.82) blur(0); }
-  .touch-lens img { filter: saturate(.92) contrast(1.16) brightness(1.08); }
 }
 
 /* 矮屏笔记本保护：内容仍精确一屏，字号/间距/图形按比例收紧，避免裁切
@@ -1605,4 +1849,389 @@ body::before {
   /* 感官标签与节奏引导不依赖 hover/动效：reduced-motion 下直接可见 */
   .sensory-labels span { opacity: 1; transform: none; }
   .wave-stage i { height: calc(18px + var(--wave-index) * 9px); filter: none; }
+}
+
+/* 第六幕取景：人物上下多留一点呼吸，让背部与臀部从暗部若隐若现地出来。 */
+@media (min-width: 701px) {
+  .shop-visual {
+    height: min(82vh, 760px);
+  }
+}
+
+@media (max-width: 700px) {
+  .shop-visual {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   25. 首页 · 连续空间与自适应融合
+   -------------------------------------------------------------------------- */
+@media (min-width: 701px) {
+  .desire-hero,
+  .body-touch,
+  .scenes,
+  .peak-section,
+  .want-section,
+  .shop-reveal {
+    height: auto;
+    min-height: 100svh;
+    margin-top: 0;
+  }
+
+  .desire-hero { min-height: max(680px, 100svh); }
+  .body-touch,
+  .scenes,
+  .peak-section,
+  .want-section,
+  .shop-reveal { min-height: max(680px, 100svh); }
+
+  .body-touch,
+  .shop-reveal {
+    padding-block: clamp(72px, 10vh, 132px);
+  }
+
+  .scenes,
+  .peak-section,
+  .want-section { padding-block: 0; }
+}
+
+/* 共享空间色：让 section 边界从硬切换变成同一片暗红空间里的温度变化。 */
+.body-touch {
+  background:
+    radial-gradient(60% 100% at 76% 48%, rgba(126, 47, 46, .18), transparent 70%),
+    linear-gradient(180deg, rgba(22, 16, 19, 0) 0%, rgba(44, 21, 27, .18) 100%);
+}
+.scenes {
+  background: linear-gradient(180deg, rgba(44, 21, 27, .18), rgba(126, 47, 46, .1));
+}
+.peak-section {
+  background:
+    linear-gradient(180deg, rgba(126, 47, 46, .1), rgba(126, 47, 46, .22)),
+    radial-gradient(60% 60% at 50% 86%, rgba(238, 148, 116, .18), transparent 72%);
+}
+.want-section {
+  background:
+    linear-gradient(180deg, rgba(126, 47, 46, .22), rgba(44, 21, 27, .42)),
+    radial-gradient(50% 60% at 50% 42%, rgba(238, 148, 116, .22), transparent 72%);
+}
+.shop-reveal {
+  background:
+    linear-gradient(180deg, rgba(44, 21, 27, .42), rgba(44, 21, 27, .16)),
+    radial-gradient(58% 110% at 24% 52%, rgba(126, 47, 46, .2), transparent 70%);
+}
+
+/* 幕间渐变缝：保留装饰，但不再像硬分割线。 */
+[data-act]::after {
+  height: 22px;
+  top: -11px;
+  background: linear-gradient(90deg, transparent 0%, rgba(227, 169, 156, .16) 32%, rgba(227, 169, 156, .32) 50%, rgba(227, 169, 156, .16) 68%, transparent 100%);
+  filter: blur(6px);
+  box-shadow: none;
+  opacity: .7;
+}
+
+/* 图片统一为“从空间里浮现”，边缘不再像矩形贴片。 */
+.scene-visual,
+.peak-visual,
+.want-visual,
+.touch-lens,
+.shop-visual {
+  isolation: isolate;
+}
+.scene-visual::before {
+  background:
+    linear-gradient(180deg, rgba(22, 16, 19, .34) 0%, transparent 24%, transparent 55%, rgba(22, 16, 19, .88) 100%),
+    linear-gradient(90deg, rgba(22, 16, 19, .34), transparent 28%, transparent 72%, rgba(22, 16, 19, .2));
+}
+.scene-visual::after {
+  inset: -8%;
+  background:
+    linear-gradient(115deg, transparent 40%, rgba(240, 220, 200, .2) 50%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, transparent 56%, rgba(22, 16, 19, .42) 100%);
+}
+.peak-visual::after {
+  background:
+    linear-gradient(180deg, rgba(22, 16, 19, .78), rgba(22, 16, 19, .14) 42%, rgba(22, 16, 19, .82)),
+    linear-gradient(90deg, rgba(22, 16, 19, .68), transparent 48%, rgba(22, 16, 19, .28));
+}
+.want-visual::after {
+  background:
+    linear-gradient(90deg, rgba(22, 16, 19, .86) 0%, rgba(22, 16, 19, .32) 42%, rgba(22, 16, 19, .14) 72%, rgba(22, 16, 19, .72) 100%),
+    linear-gradient(180deg, rgba(22, 16, 19, .62), transparent 34%, rgba(22, 16, 19, .82));
+}
+
+/* 光线方向连续：第三幕光束接入第四幕波形，第五幕承接暖色。 */
+.scenes .scene-light { opacity: .82; }
+.peak-section .wave-stage { z-index: 2; }
+.peak-section .wave-stage::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -18%;
+  height: 36%;
+  background: linear-gradient(180deg, transparent, rgba(227, 169, 156, .1), transparent);
+  filter: blur(18px);
+  pointer-events: none;
+}
+.want-section .want-visual { filter: saturate(.92); }
+
+@media (max-width: 700px) {
+  .desire-hero,
+  .body-touch,
+  .scenes,
+  .peak-section,
+  .want-section,
+  .shop-reveal {
+    min-height: 0;
+    height: auto;
+    margin-top: 0;
+  }
+
+  .desire-hero { min-height: 100svh; }
+  .body-touch { background: linear-gradient(180deg, transparent, rgba(44, 21, 27, .2)); }
+  [data-act]::after { height: 16px; top: -8px; }
+  .scene-visual::after { inset: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   22. 首页 · 视觉收束与转化层级
+   --------------------------------------------------------------------------
+   只调整版式、融合和可读性，不替换 journey 原始素材。
+*/
+.site-header {
+  min-height: clamp(46px, 5vw, 54px);
+  background: rgba(22, 16, 19, .62);
+  border-color: rgba(243, 236, 227, .2);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, .24);
+}
+
+.hero-copy,
+.touch-copy,
+.scene-copy,
+.peak-copy,
+.want-copy,
+.shop-copy {
+  text-shadow: 0 2px 24px rgba(10, 6, 8, .5);
+}
+
+.hero-copy::before,
+.touch-copy::before,
+.scene-copy::before,
+.peak-copy::before,
+.shop-copy::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: -24% -18% -28% -14%;
+  background: radial-gradient(ellipse at 42% 50%, rgba(12, 7, 10, .5), transparent 74%);
+  filter: blur(8px);
+}
+
+.hero-copy h1 {
+  max-width: 8ch;
+  text-wrap: balance;
+  text-shadow: 0 8px 38px rgba(10, 6, 8, .58);
+}
+
+.hero-lead,
+.touch-copy > p:last-child,
+.scene-copy > p:last-child,
+.peak-body,
+.shop-copy > p:not(.eyebrow) {
+  color: #c4b5ad;
+}
+
+.scene-light { opacity: .68; }
+.scene-visual::after { opacity: .58; }
+.lens-ring { border-color: rgba(243, 236, 227, .28); box-shadow: 0 0 30px rgba(227, 169, 156, .18), inset 0 0 22px rgba(227, 169, 156, .1); }
+.lens-ring {
+  left: var(--pointer-x, 50%);
+  top: var(--pointer-y, 50%);
+  transition: left .8s var(--ease), top .8s var(--ease), transform 1s var(--ease);
+}
+.touch-label,
+.scene-visual > span,
+.shop-visual-label,
+.act-meta { color: #c4b5ad; }
+
+.want-visual { opacity: .72; }
+.want-visual::after {
+  background: linear-gradient(90deg, rgba(22, 16, 19, .82) 0%, rgba(22, 16, 19, .28) 42%, rgba(22, 16, 19, .16) 70%, rgba(22, 16, 19, .62) 100%), linear-gradient(180deg, rgba(22, 16, 19, .48), transparent 36%, rgba(22, 16, 19, .68));
+}
+
+.shop-copy {
+  max-width: 580px;
+}
+.shop-copy h2 { max-width: 9ch; }
+.shop-copy small { color: #b9aaa2; }
+
+/* 全局指针暖光：只做环境层，不覆盖内容、不拦截操作。 */
+.site-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  pointer-events: none;
+  opacity: var(--cursor-active, 0);
+  background: radial-gradient(ellipse 260px 220px at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(239, 170, 146, .12), transparent 72%);
+  mix-blend-mode: screen;
+  transition: opacity .6s ease;
+}
+
+.hero-bg,
+.touch-lens-img,
+.scene-img,
+.peak-visual-img,
+.want-visual-img,
+.shop-material-img {
+  will-change: transform, filter;
+}
+
+.hero-bg { filter: brightness(calc(.68 + var(--section-energy, 0) * .04)) saturate(calc(.74 + var(--section-energy, 0) * .1)) blur(5px); }
+.touch-lens::before { opacity: calc(.72 + var(--heat, 0) * .28); }
+.scene-visual::after { animation: scene-sweep 7s ease-in-out infinite alternate; }
+@keyframes scene-sweep {
+  from { transform: rotate(-18deg) translateX(-38%); opacity: .35; }
+  to { transform: rotate(-18deg) translateX(30%); opacity: .8; }
+}
+.scene-visual::after {
+  background:
+    radial-gradient(ellipse 180px 180px at var(--touch-x, 50%) var(--touch-y, 50%), rgba(255, 196, 166, .28), transparent 68%),
+    linear-gradient(115deg, transparent 40%, rgba(240, 220, 200, .2) 50%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, transparent 56%, rgba(22, 16, 19, .42) 100%);
+}
+.scene-visual.is-pulsing::after {
+  animation: scene-sweep 7s ease-in-out infinite alternate, touch-ripple .85s var(--ease) both;
+}
+@keyframes touch-ripple {
+  0% { background-size: 0 0, 100% 100%, 100% 100%; opacity: .45; }
+  55% { background-size: 420px 420px, 100% 100%, 100% 100%; opacity: 1; }
+  100% { background-size: 760px 760px, 100% 100%, 100% 100%; opacity: .4; }
+}
+
+.wave-stage {
+  --wave-scroll-energy: 0;
+}
+.wave-stage i {
+  height: calc((18px + var(--wave-index) * 9px) * (var(--wave-lift, 1) + var(--wave-scroll-energy, 0) * 1.8));
+  box-shadow: 0 0 calc(16px + var(--wave-scroll-energy, 0) * 18px) rgba(227, 169, 156, .35);
+}
+.wave-stage::after {
+  opacity: calc(.72 + var(--wave-scroll-energy, 0) * .28);
+}
+
+.want-visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 260px 220px at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(255, 174, 140, calc(.12 + var(--want-energy, 0) * .18)), transparent 70%),
+    radial-gradient(ellipse 40% 60% at 50% 72%, rgba(255, 146, 112, calc(var(--want-energy, 0) * .2)), transparent 72%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.shop-actions .primary-button { box-shadow: 0 0 0 rgba(227, 169, 156, 0); animation: cta-breathe 4.8s ease-in-out infinite; }
+@keyframes cta-breathe {
+  0%, 100% { box-shadow: 0 0 0 rgba(227, 169, 156, 0); }
+  50% { box-shadow: 0 0 34px rgba(227, 169, 156, .18); }
+}
+.shop-actions .primary-button::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 190, 160, .2), transparent 72%);
+  opacity: 0;
+  transform: scale(.7);
+  transition: opacity .4s var(--ease), transform .5s var(--ease);
+  pointer-events: none;
+}
+.shop-actions .primary-button:hover::before,
+.shop-actions .primary-button:focus-visible::before { opacity: 1; transform: scale(1); }
+.want-embers span { animation-duration: 6s; }
+.want-embers span:nth-child(3n) { animation-delay: -1.8s; }
+.want-embers span:nth-child(2n) { animation-duration: 7.5s; }
+
+.chapter-nav__list button { transform: translateX(8px); }
+.chapter-nav__list.is-open button { animation: chapter-enter .5s var(--ease) both; }
+.chapter-nav__list.is-open button:nth-child(2) { animation-delay: .06s; }
+.chapter-nav__list.is-open button:nth-child(3) { animation-delay: .12s; }
+.chapter-nav__list.is-open button:nth-child(4) { animation-delay: .18s; }
+.chapter-nav__list.is-open button:nth-child(5) { animation-delay: .24s; }
+.chapter-nav__list.is-open button:nth-child(6) { animation-delay: .3s; }
+@keyframes chapter-enter { to { transform: translateX(0); } }
+
+@media (max-width: 700px) {
+  .site-shell::after { opacity: 0; }
+  .touch-lens .lens-ring { width: clamp(110px, 28vw, 160px); }
+  .scene-visual.is-pulsing::after { animation-duration: .7s; }
+  .shop-actions .primary-button { animation-duration: 6s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-shell::after,
+  .shop-actions .primary-button,
+  .scene-visual::after,
+  .scene-visual.is-pulsing::after,
+  .chapter-nav__list.is-open button { animation: none; transition: none; }
+  .shop-actions .primary-button::before { display: none; }
+}
+.chapter-nav__rail::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(10px + (100% - 20px) * var(--rail-progress, 0));
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--flash);
+  box-shadow: 0 0 14px 4px rgba(227, 169, 156, .55);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.chapter-nav__rail { width: 12px; }
+.chapter-nav__rail-line { background: linear-gradient(180deg, transparent, rgba(243, 236, 227, .2), transparent); }
+.chapter-nav__rail-dot { background: rgba(243, 236, 227, .25); }
+.chapter-nav__rail-dot.is-active { box-shadow: 0 0 9px 2px rgba(227, 169, 156, .4); }
+
+@media (max-width: 700px) {
+  .hero-copy h1 { max-width: 9ch; }
+  .hero-copy::before,
+  .touch-copy::before,
+  .scene-copy::before,
+  .peak-copy::before,
+  .shop-copy::before { inset: -18% -12% -22%; }
+  .scene-copy { text-shadow: 0 2px 18px rgba(10, 6, 8, .72); }
+  .touch-copy > p:last-child,
+  .scene-copy > p:last-child,
+  .peak-body,
+  .shop-copy > p:not(.eyebrow) { color: #cbbcb4; }
+}
+
+/* Final desktop viewport lock: one immersive section per screen. */
+@media (min-width: 701px) {
+  .desire-hero,
+  .body-touch,
+  .scenes,
+  .peak-section,
+  .want-section,
+  .shop-reveal {
+    height: 100svh;
+    min-height: 100svh;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .body-touch,
+  .shop-reveal {
+    padding-top: clamp(72px, 10vh, 120px);
+    padding-bottom: clamp(56px, 8vh, 96px);
+  }
 }

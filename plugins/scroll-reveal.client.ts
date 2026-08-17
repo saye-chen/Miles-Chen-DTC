@@ -95,4 +95,115 @@ export default defineNuxtPlugin(() => {
       scrollTrigger: { trigger: h2, start: 'top 88%', toggleActions: 'play none none none' },
     })
   })
+
+  // C. 连续空间驱动：滚动时让背景暖光、章节图片和粒子强度同步变化。
+  const scenes = gsap.utils.toArray<HTMLElement>('.desire-hero, .body-touch, .scenes, .peak-section, .want-section, .shop-reveal')
+  scenes.forEach((section, index) => {
+    const visual = section.querySelector<HTMLElement>('.hero-bg, .touch-lens-img, .scene-img, .peak-visual-img, .want-visual-img, .shop-material-img')
+    if (visual) {
+      gsap.fromTo(visual, { scale: 1.08, xPercent: index % 2 ? 2 : -2 }, {
+        scale: 1.02,
+        xPercent: index % 2 ? -2 : 2,
+        ease: 'none',
+        scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
+      })
+    }
+    gsap.to(section, {
+      '--section-energy': index / Math.max(1, scenes.length - 1),
+      ease: 'none',
+      scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: true },
+    })
+  })
+
+  const pointer = { x: 50, y: 50, active: 0 }
+  let pointerRaf = 0
+  const updatePointer = () => {
+    document.documentElement.style.setProperty('--cursor-x', `${pointer.x}%`)
+    document.documentElement.style.setProperty('--cursor-y', `${pointer.y}%`)
+    document.documentElement.style.setProperty('--cursor-active', pointer.active.toFixed(2))
+    pointerRaf = 0
+  }
+  const onPointerMove = (event: PointerEvent) => {
+    pointer.x = (event.clientX / window.innerWidth) * 100
+    pointer.y = (event.clientY / window.innerHeight) * 100
+    pointer.active = 1
+    if (!pointerRaf) pointerRaf = requestAnimationFrame(updatePointer)
+  }
+  const onPointerLeave = () => {
+    pointer.active = 0
+    if (!pointerRaf) pointerRaf = requestAnimationFrame(updatePointer)
+  }
+  window.addEventListener('pointermove', onPointerMove, { passive: true })
+  document.documentElement.addEventListener('mouseleave', onPointerLeave)
+
+  // 第四幕：滚动速度映射到波形热度，和现有横向指针交互叠加。
+  let lastScrollY = window.scrollY
+  let lastScrollTime = performance.now()
+  const peak = document.querySelector<HTMLElement>('.peak-section')
+  const onScrollEnergy = () => {
+    const now = performance.now()
+    const velocity = Math.min(1, Math.abs(window.scrollY - lastScrollY) / Math.max(16, now - lastScrollTime) * 1.8)
+    lastScrollY = window.scrollY
+    lastScrollTime = now
+    peak?.style.setProperty('--wave-scroll-energy', velocity.toFixed(3))
+  }
+  window.addEventListener('scroll', onScrollEnergy, { passive: true })
+
+  // 首屏离场：滚动时标题和背景错速退出，下一幕暖光从底部接入。
+  const hero = document.querySelector<HTMLElement>('.desire-hero')
+  if (hero) {
+    const heroCopy = hero.querySelector<HTMLElement>('.hero-copy')
+    const heroVisual = hero.querySelector<HTMLElement>('.hero-visual')
+    if (heroCopy) {
+      gsap.to(heroCopy, {
+        yPercent: -18,
+        autoAlpha: 0.18,
+        ease: 'none',
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+      })
+    }
+    if (heroVisual) {
+      gsap.to(heroVisual, {
+        scale: 1.08,
+        yPercent: 5,
+        ease: 'none',
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 1.2 },
+      })
+    }
+  }
+
+  // 第三幕触碰波纹：点击/触摸时给画面一个短暂的扩散反馈。
+  document.querySelectorAll<HTMLElement>('.scene-visual').forEach((visual) => {
+    let pulseTimer = 0
+    visual.addEventListener('pointerdown', (event) => {
+      const rect = visual.getBoundingClientRect()
+      visual.style.setProperty('--touch-x', `${((event.clientX - rect.left) / rect.width) * 100}%`)
+      visual.style.setProperty('--touch-y', `${((event.clientY - rect.top) / rect.height) * 100}%`)
+      visual.classList.remove('is-pulsing')
+      void visual.offsetWidth
+      visual.classList.add('is-pulsing')
+      window.clearTimeout(pulseTimer)
+      pulseTimer = window.setTimeout(() => visual.classList.remove('is-pulsing'), 850)
+    })
+  })
+
+  // 第五幕：滚动到中心时让余烬和图片热度同步升高。
+  document.querySelectorAll<HTMLElement>('.want-section').forEach((section) => {
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: (self) => section.style.setProperty('--want-energy', self.progress.toFixed(3)),
+    })
+  })
+
+  // 章节导航：当前节点之外，增加一条随滚动流动的连接光。
+  const chapterRail = document.querySelector<HTMLElement>('.chapter-nav__rail')
+  if (chapterRail) {
+    ScrollTrigger.create({
+      start: 0,
+      end: () => ScrollTrigger.maxScroll(window),
+      onUpdate: (self) => chapterRail.style.setProperty('--rail-progress', self.progress.toFixed(3)),
+    })
+  }
 })

@@ -10,7 +10,7 @@ const label = computed(() => language.value === 'zh' ? {
 } : {
   eyebrow: '01 / Let the dark fall',
   cta: 'Give in',
-  cta2: 'See what’s waiting',
+  cta2: 'Explore the collection',
   scroll: 'Keep going',
 })
 
@@ -19,7 +19,7 @@ const dust = ref<HTMLCanvasElement | null>(null)
 const pulse = ref<HTMLCanvasElement | null>(null)
 useTouchField(visual)
 usePulseCanvas(pulse)
-useDustParticles(dust, visual)
+useDustParticles(dust, visual, 42)
 
 /** 标题拆成"行 > 视觉单元"：中文逐字、英文逐词（含空格占位），SSR 直接渲染 */
 const units = computed(() => props.copy.title.split('\n').map(line =>
