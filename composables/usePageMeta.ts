@@ -37,7 +37,7 @@ export function usePageMeta(input: MaybeRefOrGetter<PageMetaInput>) {
     ogTitle: () => toValue(input).title,
     ogDescription: () => toValue(input).description,
     ogType: () => toValue(input).type ?? 'website',
-    ogImage: () => toValue(input).image ?? `${SITE_URL}/images/journey/hero-v2.png`,
+    ogImage: () => toValue(input).image ?? `${SITE_URL}/images/journey/hero-touch-film.png`,
     ogLocale: () => toValue(language) === 'zh' ? 'zh_CN' : 'en_US',
     ogUrl: () => SITE_URL + route.path,
     ogSiteName: () => SITE_NAME,

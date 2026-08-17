@@ -63,16 +63,9 @@ export default defineNuxtPlugin(() => {
     })
   })
 
-  // 第五幕：欲望之核随滚动生长（进入扩散 / 离开收回）+ 标题延迟 250ms 上浮
+  // 第五幕：文案延迟 250ms 上浮（影像为静态全幅背景，心核由 CSS 呼吸动画驱动）
   gsap.utils.toArray<HTMLElement>('.want-section').forEach((section) => {
-    const core = section.querySelector('.want-object')
     const copy = section.querySelector('.want-copy')
-    if (core) {
-      gsap.fromTo(core, { scale: 0.72, opacity: 0.5 }, {
-        scale: 1, opacity: 1, duration: 1.4, ease: 'power2.out',
-        scrollTrigger: { trigger: section, start: 'top 72%', toggleActions: 'play none none reverse' },
-      })
-    }
     if (copy) {
       gsap.fromTo(copy, { autoAlpha: 0, y: 40 }, {
         autoAlpha: 1, y: 0, duration: 1, delay: 0.25, ease: 'power3.out',
