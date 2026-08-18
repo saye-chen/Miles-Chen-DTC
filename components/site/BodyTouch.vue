@@ -41,7 +41,6 @@ useTouchField(lens)
         src="/images/journey/originals/unsplash-hand-waist-original.jpg"
         :alt="language === 'zh' ? '黑暗中，手掌沿着温暖的皮肤与身体曲线停留' : 'A hand resting along warm skin and a curved body in the dark'"
         sizes="(max-width: 700px) 92vw, 54vw"
-        parallax="0.08"
         img-class="touch-lens-img touch-waist-img"
       />
       <div class="lens-ring" aria-hidden="true"></div>

@@ -37,9 +37,16 @@ test.describe('首页', () => {
     expect(avif.length).toBeGreaterThan(0)
   })
 
-  test('移动端：内容可滚动到底，页脚可见，章节进度存在', async ({ page }) => {
+  test('移动端：内容可滚动到底，页脚可见，章节入口可展开', async ({ page }) => {
+    const viewport = page.viewportSize()
+    test.skip(viewport && viewport.width > 960, '移动章节入口仅平板与移动端显示')
     await page.goto('/', { waitUntil: 'networkidle' })
-    await expect(page.locator('.mobile-progress')).toBeAttached()
+    await expect(page.locator('.mobile-progress')).toBeVisible()
+    await page.locator('.mobile-progress').click()
+    await expect(page.locator('.mobile-chapter-sheet')).toBeVisible()
+    await expect(page.locator('.mobile-chapter-sheet button')).toHaveCount(6)
+    await page.keyboard.press('Escape')
+    await expect(page.locator('.mobile-chapter-sheet')).toBeHidden()
     // 移动端 hero 标题不贴顶（在固定导航下方）
     const h1 = await page.locator('#hero-title').boundingBox()
     expect(h1!.y).toBeGreaterThan(40)
@@ -60,27 +67,67 @@ test.describe('首页', () => {
     expect(box.bottom).toBeGreaterThanOrEqual(box.vh)
   })
 
-  test('桌面端：02/06 幕影像铺到视口右缘、无圆角卡片感、无横向溢出', async ({ page }) => {
+  test('桌面端：02 幕保留右侧呼吸，06 幕保持完整横向画幅，无横向溢出', async ({ page }) => {
     const viewport = page.viewportSize()
     test.skip(viewport && viewport.width < 961, '全幅浮现式布局仅桌面端（>960px）')
     await page.goto('/', { waitUntil: 'networkidle' })
     // 全幅浮现式面板不应撑出横向滚动
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
     expect(overflow).toBeLessThanOrEqual(1)
-    for (const sel of ['.touch-lens', '.shop-visual']) {
-      const box = await page.locator(sel).evaluate((el) => {
-        const r = el.getBoundingClientRect()
-        return { right: r.right, vw: window.innerWidth, radius: getComputedStyle(el).borderRadius }
-      })
-      expect(box.right).toBeGreaterThanOrEqual(box.vw - 1)
-      expect(box.radius).toBe('0px')
-    }
-    // 第二幕影像左缘通过 mask 淡出到黑暗（"从暗部里浮现"，去贴图卡片感）
-    const masked = await page.locator('.touch-lens').evaluate((el) => {
-      const s = getComputedStyle(el)
-      return s.maskImage !== 'none' || s.webkitMaskImage !== 'none'
+    const touch = await page.locator('.touch-lens').evaluate((el) => {
+      const r = el.getBoundingClientRect()
+      return { rightGap: window.innerWidth - r.right, radius: getComputedStyle(el).borderRadius }
     })
-    expect(masked).toBe(true)
+    expect(touch.rightGap).toBeGreaterThanOrEqual(24)
+    expect(touch.rightGap).toBeLessThanOrEqual(64)
+    expect(touch.radius).toBe('0px')
+
+    const shop = await page.locator('.shop-visual').evaluate((el) => {
+      const r = el.getBoundingClientRect()
+      const img = el.querySelector('img')
+      const style = img ? getComputedStyle(img) : null
+      return {
+        ratio: r.width / r.height,
+        right: r.right,
+        vw: window.innerWidth,
+        radius: getComputedStyle(el).borderRadius,
+        objectFit: style?.objectFit,
+        blend: style?.mixBlendMode,
+      }
+    })
+    expect(shop.ratio).toBeGreaterThan(1.7)
+    expect(shop.ratio).toBeLessThan(1.84)
+    expect(shop.right).toBeGreaterThanOrEqual(shop.vw - 1)
+    expect(shop.radius).toBe('0px')
+    expect(shop.objectFit).toBe('cover')
+    expect(shop.blend).toBe('normal')
+
+    // 两幕均取消视差放大；渐隐只作用于图片，不影响标签与触碰反馈。
+    await expect(page.locator('.touch-waist-img')).not.toHaveAttribute('data-parallax', /.+/)
+    await expect(page.locator('.shop-material-img')).not.toHaveAttribute('data-parallax', /.+/)
+    const fusion = await page.evaluate(() => {
+      const touch = document.querySelector<HTMLElement>('.touch-lens')
+      const touchPicture = document.querySelector<HTMLElement>('.touch-lens .site-picture')
+      const shopScrim = document.querySelector<HTMLElement>('.shop-visual-scrim')
+      const footer = document.querySelector<HTMLElement>('.commerce-footer')
+      const maskValue = (el: HTMLElement | null) => {
+        if (!el) return ''
+        const style = getComputedStyle(el)
+        return style.maskImage !== 'none' ? style.maskImage : style.webkitMaskImage
+      }
+      return {
+        touchBackground: touch ? getComputedStyle(touch).backgroundImage : '',
+        touchPictureMaskCount: (maskValue(touchPicture).match(/linear-gradient/g) || []).length,
+        touchOverlayMasked: touch ? getComputedStyle(touch, '::after').maskImage !== 'none' || getComputedStyle(touch, '::after').webkitMaskImage !== 'none' : false,
+        shopScrimMaskCount: (maskValue(shopScrim).match(/linear-gradient/g) || []).length,
+        footerBorder: footer ? getComputedStyle(footer).borderTopWidth : '',
+      }
+    })
+    expect(fusion.touchBackground).toBe('none')
+    expect(fusion.touchPictureMaskCount).toBeGreaterThanOrEqual(2)
+    expect(fusion.touchOverlayMasked).toBe(true)
+    expect(fusion.shopScrimMaskCount).toBeGreaterThanOrEqual(2)
+    expect(fusion.footerBorder).toBe('0px')
   })
 
   test('语言切换：英文 → 中文（标题与 html lang 同步）', async ({ page }) => {
@@ -99,31 +146,29 @@ test.describe('首页', () => {
     await expect(page.locator('.body-touch h2')).toBeVisible()
   })
 
-  test('右侧章节导航：触发式悬浮，不遮挡背景、不挤压布局', async ({ page }) => {
+  test('右侧章节导航：轨道常驻，列表向左展开且可跳转', async ({ page }) => {
     const viewport = page.viewportSize()
     test.skip(viewport && viewport.width < 961, '章节导航仅桌面端（>960px）显示')
     await page.goto('/', { waitUntil: 'networkidle' })
     const nav = page.locator('.chapter-nav')
-    const zoneX = viewport!.width - 20
     const midY = Math.round(viewport!.height / 2)
-    // 静止态：完全透明、不拦截指针
-    await expect(nav).toHaveCSS('opacity', '0')
-    await expect(nav).toHaveCSS('pointer-events', 'none')
-    // 鼠标靠近右缘热区 → 浮现
-    await page.mouse.move(zoneX, midY)
-    await expect(nav).toHaveCSS('opacity', '1')
-    await expect(nav).toHaveCSS('pointer-events', 'auto')
-    // 悬停 → 章节列表悬浮展开
-    await page.mouse.move(zoneX - 6, midY)
+    await expect(nav).toBeVisible()
+    // 悬停常驻轨道，完整列表向左展开，不会越出视口。
+    await page.locator('.chapter-nav__rail').hover()
     await expect(page.locator('.chapter-nav__list')).toHaveClass(/is-open/)
+    const listBox = await page.locator('.chapter-nav__list').boundingBox()
+    expect(listBox).not.toBeNull()
+    expect(listBox!.x).toBeGreaterThanOrEqual(0)
+    expect(listBox!.x + listBox!.width).toBeLessThanOrEqual(viewport!.width)
     // 点击第 4 幕跳转
     await page.locator('.chapter-nav__list button').nth(3).click()
     await page.waitForTimeout(900)
     const peakTop = await page.locator('.peak-section').evaluate((el) => Math.round(el.getBoundingClientRect().top))
     expect(peakTop).toBeLessThan(150)
-    // 鼠标移开后导航重新隐藏
+    // 鼠标移开后仅收起列表，进度轨仍可见。
     await page.mouse.move(Math.round(viewport!.width / 2), midY)
-    await expect(nav).toHaveCSS('opacity', '0')
+    await expect(page.locator('.chapter-nav__list')).not.toHaveClass(/is-open/)
+    await expect(nav).toBeVisible()
   })
 })
 

@@ -14,6 +14,8 @@ export function useTouchField(host: Ref<HTMLElement | null>) {
   let hovered = false
   let raf = 0
   let el: HTMLElement | null = null
+  let visible = true
+  let observer: IntersectionObserver | undefined
 
   const setVar = (name: string, value: string) => el?.style.setProperty(name, value)
 
@@ -25,6 +27,13 @@ export function useTouchField(host: Ref<HTMLElement | null>) {
     setVar('--pointer-x', `${current.x}%`)
     setVar('--pointer-y', `${current.y}%`)
     setVar('--heat', heat.toFixed(3))
+    const moving = Math.abs(target.x - current.x) > 0.05 || Math.abs(target.y - current.y) > 0.05
+    const changingHeat = hovered ? heat < 0.999 : heat > 0.001
+    raf = moving || changingHeat ? requestAnimationFrame(tick) : 0
+  }
+
+  const start = () => {
+    if (!visible || raf) return
     raf = requestAnimationFrame(tick)
   }
 
@@ -34,10 +43,12 @@ export function useTouchField(host: Ref<HTMLElement | null>) {
     target.x = ((event.clientX - rect.left) / rect.width) * 100
     target.y = ((event.clientY - rect.top) / rect.height) * 100
     hovered = true
+    start()
   }
-  function handleLeave() { hovered = false }
-  function handleDown() { heat = Math.min(1, heat + 0.5) }
-  function handleTouch() { heat = Math.min(1, heat + 0.42) }
+  function handleEnter() { hovered = true; start() }
+  function handleLeave() { hovered = false; start() }
+  function handleDown() { heat = Math.min(1, heat + 0.5); start() }
+  function handleTouch() { heat = Math.min(1, heat + 0.42); start() }
 
   onMounted(() => {
     el = host.value
@@ -49,11 +60,29 @@ export function useTouchField(host: Ref<HTMLElement | null>) {
       setVar('--pointer-y', '60%')
       return
     }
+    el.addEventListener('pointerenter', handleEnter)
     el.addEventListener('pointermove', handleMove)
     el.addEventListener('pointerdown', handleDown)
     el.addEventListener('pointerleave', handleLeave)
     el.addEventListener('touchstart', handleTouch, { passive: true })
-    raf = requestAnimationFrame(tick)
+    observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      if (visible) start()
+      else {
+        hovered = false
+        cancelAnimationFrame(raf)
+        raf = 0
+      }
+    })
+    observer.observe(el)
   })
-  onBeforeUnmount(() => cancelAnimationFrame(raf))
+  onBeforeUnmount(() => {
+    cancelAnimationFrame(raf)
+    observer?.disconnect()
+    el?.removeEventListener('pointerenter', handleEnter)
+    el?.removeEventListener('pointermove', handleMove)
+    el?.removeEventListener('pointerdown', handleDown)
+    el?.removeEventListener('pointerleave', handleLeave)
+    el?.removeEventListener('touchstart', handleTouch)
+  })
 }

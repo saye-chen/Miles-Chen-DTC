@@ -36,13 +36,12 @@ const copy = computed(() => language.value === 'zh' ? {
       <small>{{ copy.note }}</small>
     </div>
 
-    <!-- 右：门扉 —— 材质影像作为"黑暗尽头的一扇门"，出血到视口右缘 -->
-    <div class="shop-visual" data-reveal>
+    <!-- 右：横向画布保持素材原始尺度，暗部延伸到文案后方，人物从空间里浮现 -->
+    <div class="shop-visual">
       <SitePicture
         src="/images/journey/pexels-six-afterglow-v1.png"
         :alt="language === 'zh' ? '暗铜色调下，成年模特的肩背、腰线与蕾丝身体轮廓' : 'An adult fashion model’s shoulders, waist and lace silhouette in dark copper light'"
-        sizes="(max-width: 700px) 92vw, 52vw"
-        parallax="0.06"
+        sizes="(max-width: 700px) 92vw, (max-width: 1600px) 86vw, 1350px"
         img-class="shop-material-img"
       />
       <div class="shop-visual-scrim" aria-hidden="true"></div>
