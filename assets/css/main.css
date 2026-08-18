@@ -212,9 +212,11 @@ main:focus { outline: none; }
   display: none; flex-direction: column; justify-content: center; gap: 7px;
   padding: 0;
 }
-.menu-button span { width: 24px; height: 1.5px; background: var(--ivory); transition: background .3s; }
+.menu-button span { width: 24px; height: 1.5px; background: var(--ivory); transition: background .3s, transform .35s var(--ease); }
 .menu-button:hover span { background: var(--flash); }
-.mobile-nav { display: none; }
+.menu-button.is-open span:first-child { transform: translateY(4.25px) rotate(45deg); }
+.menu-button.is-open span:last-child { transform: translateY(-4.25px) rotate(-45deg); }
+.mobile-nav, .mobile-nav-layer, .mobile-nav-backdrop { display: none; }
 
 /* --------------------------------------------------------------------------
    6. 首页 · Hero
@@ -270,7 +272,6 @@ main:focus { outline: none; }
   mix-blend-mode: screen; pointer-events: none;
 }
 .hero-dust { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; pointer-events: none; z-index: 2; }
-.hero-pulse { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; pointer-events: none; z-index: 3; }
 .hero-label {
   position: absolute; top: calc(clamp(10px, 1.6vh, 16px) + clamp(48px, 5.5vh, 58px) + 18px);
   right: clamp(20px, 3vw, 48px);
@@ -369,9 +370,9 @@ main:focus { outline: none; }
   width: 100%;
   margin-top: clamp(24px, 3.5vh, 44px);
   display: grid;
-  /* 不对称舞台：文案列（0.85fr）+ 热源影像列（1.15fr，铺满右缘） */
-  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-  gap: clamp(40px, 5vw, 80px);
+  /* 同一张横向画面里的暗部文案 + 右侧腰部主视觉，主体落在约 78% 处。 */
+  grid-template-columns: minmax(280px, .62fr) minmax(0, 1.38fr);
+  gap: clamp(24px, 3vw, 52px);
   align-items: center;
   min-height: calc(100svh - var(--header-h));
   height: auto;
@@ -387,7 +388,7 @@ main:focus { outline: none; }
 .touch-lens {
   order: 2;
   position: relative;
-  height: min(74vh, 660px);
+  height: min(82vh, 760px);
   border-radius: 0;
   box-shadow: none;
   overflow: hidden;
@@ -399,9 +400,10 @@ main:focus { outline: none; }
   align-self: center;
   position: relative; z-index: 1;
   display: flex; flex-direction: column; justify-content: center;
+  max-width: min(720px, 100%);
   padding-top: clamp(8px, 1vh, 16px);
 }
-.touch-lens img { min-height: 100%; opacity: .9; object-position: 50% 42%; filter: saturate(.82) contrast(1.14) brightness(1.03) sepia(.08); }
+.touch-lens img { min-height: 100%; opacity: .9; object-position: 54% 48%; filter: saturate(.82) contrast(1.14) brightness(1.03) sepia(.08); }
 /* 热源光斑：指针靠近时体温光跟随（--pointer-x/y），按下/触摸升温（--heat），
    与首页触碰机制同款；无指针时保持中央缓慢呼吸 */
 .touch-lens::before {
@@ -410,12 +412,9 @@ main:focus { outline: none; }
     radial-gradient(34% 46% at var(--pointer-x, 50%) var(--pointer-y, 52%), rgba(230, 170, 150, calc(.1 + var(--heat, 0) * .3)), transparent 70%),
     radial-gradient(55% 60% at 50% 56%, var(--heat-3), transparent 68%);
   mix-blend-mode: screen;
-  animation: heat-breathe 5.5s ease-in-out infinite alternate;
+  -webkit-mask-image: radial-gradient(ellipse 88% 92% at 62% 52%, #000 48%, rgba(0, 0, 0, .72) 70%, transparent 100%);
+  mask-image: radial-gradient(ellipse 88% 92% at 62% 52%, #000 48%, rgba(0, 0, 0, .72) 70%, transparent 100%);
   pointer-events: none;
-}
-@keyframes heat-breathe {
-  from { opacity: .5; transform: scale(.97); }
-  to { opacity: 1; transform: scale(1.05); }
 }
 .touch-lens::after {
   content: ""; position: absolute; inset: 0;
@@ -424,15 +423,22 @@ main:focus { outline: none; }
 }
 .lens-ring {
   position: absolute; z-index: 2;
-  width: clamp(140px, 18vw, 220px); aspect-ratio: 1;
-  left: 50%; top: 50%;
+  width: clamp(150px, 20vw, 260px); aspect-ratio: 1;
+  left: 63%; top: 55%;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(243, 236, 227, .4); border-radius: 50%;
+  border: 1px solid rgba(243, 236, 227, .34); border-radius: 50%;
   box-shadow: 0 0 42px rgba(227, 169, 156, .28), inset 0 0 30px rgba(227, 169, 156, .16);
   transition: transform 1s var(--ease);
   pointer-events: none;
 }
 .touch-lens:hover .lens-ring { transform: translate(-50%, -50%) scale(1.3); }
+.touch-body-copy {
+  max-width: 48ch;
+  margin-top: clamp(18px, 2.6vh, 30px);
+  color: #c4b5ad;
+  font-size: clamp(14px, 1.2vw, 17px);
+  line-height: 1.85;
+}
 .touch-label {
   position: absolute; top: 20px; right: 20px; z-index: 1;
   font-size: 9px; letter-spacing: .22em; color: var(--muted);
@@ -469,7 +475,20 @@ main:focus { outline: none; }
     radial-gradient(46% 74% at 72% 50%, rgba(227, 169, 156, .15), transparent 70%),
     radial-gradient(30% 52% at 58% 50%, rgba(126, 47, 46, .24), transparent 72%);
   mix-blend-mode: screen;
-  animation: halo-breathe 7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+/* 第二幕中段连接层：把文字区的暗部自然引向右侧热源，不增加新的卡片。 */
+.body-touch::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 40%;
+  top: 52%;
+  width: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(227, 169, 156, .34), transparent);
+  box-shadow: 0 0 24px rgba(227, 169, 156, .2);
   pointer-events: none;
 }
 
@@ -578,12 +597,7 @@ main:focus { outline: none; }
   border-radius: 50%;
   background: radial-gradient(circle at 50% 42%, rgba(255, 170, 134, .42), rgba(227, 169, 156, .14) 48%, transparent 72%);
   filter: blur(12px);
-  animation: core-breathe 6.5s ease-in-out infinite alternate;
   pointer-events: none;
-}
-@keyframes core-breathe {
-  from { opacity: .55; transform: translate(-50%, -50%) scale(.92); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
 }
 /* 标题可读性：局部暗部兜底（与 hero-copy::before 同一模式），影像亮部也保持可读 */
 .want-copy::before {
@@ -609,19 +623,12 @@ main:focus { outline: none; }
 .want-embers span {
   position: absolute;
   left: calc(8% + var(--ember-i) * 13%);
-  bottom: -6px;
+  bottom: calc(8% + var(--ember-i) * 7%);
   width: 3px; height: 3px;
   border-radius: 50%;
   background: rgba(255, 184, 142, .55);
   box-shadow: 0 0 8px 1px rgba(255, 160, 120, .35);
-  opacity: 0;
-  animation: ember-rise 8s ease-in infinite;
-  animation-delay: calc(var(--ember-i) * .85s);
-}
-@keyframes ember-rise {
-  0% { transform: translate(0, 0) scale(.5); opacity: 0; }
-  14% { opacity: .9; }
-  100% { transform: translate(calc(var(--ember-i) * 5px - 18px), -72vh) scale(1.2); opacity: 0; }
+  opacity: .28;
 }
 
 /* --------------------------------------------------------------------------
@@ -712,18 +719,13 @@ main:focus { outline: none; }
 /* 节奏互动：--wave-lift（JS 按指针位置写入）抬高波峰，--wave-x 定位暖光 */
 .wave-stage i {
   width: clamp(2px, .28vw, 4px);
-  height: calc((18px + var(--wave-index) * 9px) * var(--wave-lift, 1));
+  height: calc(18px + var(--wave-index) * 9px);
   background: linear-gradient(180deg, var(--flash), var(--cherry));
   box-shadow: 0 0 16px rgba(227, 169, 156, .35);
-  filter: brightness(calc(1 + var(--wave-heat, 0) * .55));
-  animation: wave-breathe 2s ease-in-out infinite alternate;
-  animation-delay: calc(var(--wave-index) * -.1s);
-  transition: height .35s var(--ease);
-}
-.wave-stage i:nth-child(odd) { animation-duration: 1.5s; }
-@keyframes wave-breathe {
-  from { opacity: .45; }
-  to { opacity: 1; }
+  opacity: calc(.58 + var(--wave-heat, 0) * .42);
+  transform: scaleY(var(--wave-lift, .58));
+  transform-origin: center;
+  transition: transform .24s var(--ease), opacity .24s ease;
 }
 /* 按住暖色：跟随指针位置的一团暖光，亮度由 --wave-heat 控制 */
 .wave-stage::after {
@@ -844,9 +846,8 @@ main:focus { outline: none; }
   object-position: 58% 46%;
   mix-blend-mode: normal; opacity: .84;
   filter: saturate(.78) contrast(1.16) brightness(.94) sepia(.12);
-  transition: transform 1.2s var(--ease);
+  transition: none;
 }
-.shop-visual:hover .shop-material-img { transform: scale(1.05); }
 .shop-visual-scrim {
   position: absolute; inset: 0; z-index: 1;
   pointer-events: none;
@@ -854,22 +855,6 @@ main:focus { outline: none; }
 .shop-visual-label {
   position: absolute; top: 18px; right: 20px; z-index: 3;
   font-size: 9px; letter-spacing: .22em; color: var(--muted);
-}
-/* 门缝光：从门扉左缘渗入的一线光（"进入"的意象），指向左侧双按钮 */
-.shop-visual::before {
-  content: ""; position: absolute; inset: 0 auto 0 0; z-index: 2;
-  width: clamp(60px, 9vw, 130px);
-  background: linear-gradient(90deg, rgba(255, 217, 200, .16), rgba(227, 169, 156, .1), transparent);
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-/* 门下光：门扉底部向材质上渗出的暖光（"门一直在等你"） */
-.shop-visual::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
-  height: 52%;
-  background: linear-gradient(180deg, transparent, rgba(255, 205, 175, .15));
-  mix-blend-mode: screen;
-  pointer-events: none;
 }
 /* 双按钮：主 CTA 进商店 + 描边次级入口（转化落点） */
 .shop-actions {
@@ -890,17 +875,16 @@ main:focus { outline: none; }
 .shop-copy > p:not(.eyebrow) { max-width: 42ch; margin: 24px 0; color: var(--muted); }
 .shop-copy small { display: block; margin-top: 20px; color: var(--muted); font-size: 11px; max-width: 42ch; }
 
-/* 等待的微光：文案与门扉之间的一粒暖光，缓慢呼吸——"它一直在等你" */
+/* 等待的微光：文案与门扉之间的一粒静态暖光。 */
 .shop-waiting-light {
   position: absolute; left: 50%; top: 58%;
   width: 5px; height: 5px; border-radius: 50%;
   background: var(--flash);
   box-shadow: 0 0 14px 4px rgba(227, 169, 156, .5), 0 0 46px 14px rgba(227, 169, 156, .2);
   transform: translateY(-50%);
-  animation: waiting-pulse 4.5s ease-in-out infinite alternate;
   pointer-events: none;
 }
-/* 门下光池：门扉下方渗进房间的光（与 .shop-visual::after 呼应，让门"亮着"） */
+/* 门下光池：在横向影像下方留一层低亮暖光，延续“它一直在等你”的意象。 */
 .shop-doorlight {
   position: absolute; left: 42%; right: 0; z-index: 0;
   bottom: clamp(44px, 6vh, 72px);
@@ -908,10 +892,6 @@ main:focus { outline: none; }
   background: radial-gradient(62% 100% at 58% 0%, rgba(255, 205, 175, .12), transparent 72%);
   mix-blend-mode: screen;
   pointer-events: none;
-}
-@keyframes waiting-pulse {
-  from { opacity: .45; transform: translateY(-50%) scale(.75); }
-  to { opacity: 1; transform: translateY(-50%) scale(1.3); }
 }
 /* 右缘题签：竖排章节标记，与首屏 DARKNESS 同一套题签语言（02 / 06 共用） */
 .act-meta {
@@ -1230,18 +1210,33 @@ main:focus { outline: none; }
    -------------------------------------------------------------------------- */
 @media (max-width: 700px) {
   .section-frame, .footer-inner { width: calc(100% - 40px); }
-  .site-header { width: calc(100% - 24px); min-height: 48px; gap: 8px; padding-left: 16px; }
+  body.has-mobile-menu { overflow: hidden; }
+  .site-header {
+    width: calc(100% - 24px); min-height: 48px; gap: 8px; padding-left: 16px;
+    background: rgba(22, 16, 19, .94);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
   .desktop-nav { display: none; }
   .language-button { margin-left: auto; }
   .menu-button { display: flex; }
+  .mobile-nav-layer {
+    position: fixed; inset: 0; z-index: -1;
+    display: block;
+  }
+  .mobile-nav-backdrop {
+    position: absolute; inset: 0;
+    display: block;
+    width: 100%; height: 100%;
+    background: rgba(9, 6, 8, .72);
+  }
   .mobile-nav {
-    position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+    position: absolute; top: 66px; left: 0; right: 0;
     display: flex; flex-direction: column;
-    padding: 14px 20px 20px;
-    background: rgba(31, 24, 27, .97);
-    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--line);
-    box-shadow: var(--shadow-1);
+    padding: 18px 20px 24px;
+    border-radius: 0 0 18px 18px;
+    background: #1f181b;
+    border: 1px solid var(--line);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .48);
   }
   .mobile-nav a {
     padding: 14px 4px;
@@ -1250,6 +1245,10 @@ main:focus { outline: none; }
     border-bottom: 1px solid var(--line);
   }
   .mobile-nav a:hover { color: var(--ivory); }
+  .mobile-menu-enter-active, .mobile-menu-leave-active { transition: opacity .28s ease; }
+  .mobile-menu-enter-active .mobile-nav, .mobile-menu-leave-active .mobile-nav { transition: transform .36s var(--ease), opacity .28s ease; }
+  .mobile-menu-enter-from, .mobile-menu-leave-to { opacity: 0; }
+  .mobile-menu-enter-from .mobile-nav, .mobile-menu-leave-to .mobile-nav { opacity: 0; transform: translateY(-12px); }
 
   /* Hero：全屏沉浸，触屏无 hover 影像常显，大字题签在偏左中央 */
   .desire-hero { height: 100svh; }
@@ -1260,7 +1259,7 @@ main:focus { outline: none; }
   .hero-copy h1 .hero-line:nth-of-type(2) { text-shadow: 0 10px 34px rgba(18, 8, 12, .42); }
   .hero-lead { font-size: 14px; }
   .hero-label { top: calc(10px + 48px + 14px); right: 20px; }
-  .scroll-note { left: 50%; transform: translateX(-50%); right: auto; bottom: 20px; }
+  .scroll-note { left: 50%; transform: translateX(-50%); right: auto; bottom: 70px; }
 
   /* 章节全部改为单列堆叠：文案在上、图形在下 */
   .body-touch, .relationship, .trust-section, .journal, .shop-reveal {
@@ -1322,103 +1321,167 @@ main:focus { outline: none; }
   .footer-bottom { flex-direction: column; gap: 12px; }
 }
 
-/* 第二幕：把热源从右侧边缘拉回页面空间，保留手部与身体的完整关系。 */
+/* 第二幕：右侧留出稳定呼吸区，照片两端在暗部里渐隐，不再贴住视口边缘。 */
 @media (min-width: 701px) {
   .body-touch {
-    grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
-    gap: clamp(26px, 3.5vw, 58px);
+    grid-template-columns: minmax(300px, .62fr) minmax(0, 1.38fr);
+    gap: clamp(24px, 3vw, 52px);
   }
 
   .touch-lens {
-    width: 108%;
-    margin-left: -8%;
+    width: calc(100% - clamp(28px, 3.5vw, 56px));
+    justify-self: start;
+    margin-left: 0;
+    margin-right: clamp(28px, 3.5vw, 56px);
   }
 
-  .touch-lens img { object-position: 44% 42%; }
+  .body-touch .touch-lens .site-picture {
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .96) 14%, #000 29%, #000 91%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, .9) 8%, #000 18%, #000 86%, rgba(0, 0, 0, .9) 94%, transparent 100%);
+    mask-image:
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .96) 14%, #000 29%, #000 91%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, .9) 8%, #000 18%, #000 86%, rgba(0, 0, 0, .9) 94%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  .touch-lens img { object-position: right center; }
   .lens-ring { box-shadow: 0 0 34px rgba(227, 169, 156, .24), inset 0 0 24px rgba(227, 169, 156, .12); }
   .sensory-labels { bottom: 24px; opacity: .82; }
 }
 
-/* 第六幕：缩小右侧素材的压迫感，减少上下模糊，让人物轮廓自然落在空间里。 */
+/* 第六幕：保持 16:9 原始构图和人物尺度，利用素材暗部把影像延伸到文案后方。 */
 @media (min-width: 701px) {
   .shop-reveal {
-    grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
-    gap: clamp(28px, 4vw, 64px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
   }
 
-  .shop-visual {
-    width: 106%;
-    margin-left: -3%;
-    height: min(76vh, 700px);
+  .shop-reveal .shop-copy {
+    position: relative;
+    z-index: 3;
+    width: min(46vw, 580px);
   }
 
-  .shop-reveal::before {
-    content: "";
+  .shop-reveal .shop-visual {
     position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: radial-gradient(38% 48% at 66% 50%, rgba(227, 169, 156, .08), transparent 72%);
-    pointer-events: none;
+    top: 50%;
+    right: 0;
+    z-index: 1;
+    width: min(86vw, 1350px);
+    height: auto;
+    aspect-ratio: 16 / 9;
+    margin: 0;
+    transform: translateY(-50%);
+    overflow: visible;
   }
 }
 
-/* 02/06 幕 · 统一视觉语言（final）：
-   - 源图已做「暖酒红暗部填充 + 主体提亮」（处理母版见 originals/），
-     纯黑背景已替换为与页面同温的暖暗，不再需要 img 级溶解 mask；
-     边缘融合交给容器级 mask，混合统一为 screen + sepia 暖调，与全站影像家族一致。 */
+/* 02/06 幕 · 统一视觉语言：保留原始照片质感，只用暗部遮罩和色调统一融入页面。 */
 .body-touch .touch-lens {
-  background:
-    radial-gradient(ellipse at 72% 50%, rgba(151, 76, 63, .22), transparent 58%),
-    radial-gradient(ellipse at 48% 50%, rgba(91, 42, 39, .18), transparent 72%);
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.94) 9%, #000 22%, #000 90%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.96) 8%, #000 17%, #000 90%, transparent 100%);
-  mask-image:
-    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.94) 9%, #000 22%, #000 90%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.96) 8%, #000 17%, #000 90%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
+  overflow: visible;
+  background: transparent;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+@media (min-width: 701px) {
+  .body-touch .touch-copy {
+    max-width: min(720px, 100%);
+  }
+
+  .body-touch .touch-copy h2 {
+    max-width: 18ch;
+  }
 }
 
 .shop-reveal .shop-visual {
-  background: radial-gradient(ellipse at 60% 48%, rgba(130, 61, 52, .2), transparent 64%);
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.98) 8%, #000 18%, #000 90%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.98) 6%, #000 14%, #000 90%, transparent 100%);
-  mask-image:
-    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.98) 8%, #000 18%, #000 90%, transparent 100%),
-    linear-gradient(180deg, transparent 0%, rgba(0,0,0,.98) 6%, #000 14%, #000 90%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
+  background: transparent;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
-/* 影像本体：screen 混合让暖暗部与页面同温融合；亮度统一提升到与 05 幕参考一致 */
+@media (min-width: 701px) {
+  .shop-reveal .shop-visual .site-picture {
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .72) 12%, #000 30%, #000 94%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, .96) 5%, #000 13%, #000 88%, transparent 100%);
+    mask-image:
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .72) 12%, #000 30%, #000 94%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, .96) 5%, #000 13%, #000 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+}
+
+/* 影像本体：使用原始照片，避免透明剪影和高亮色块破坏身体质感。 */
 .body-touch .touch-lens img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right center;
+  opacity: .72;
+  mix-blend-mode: multiply;
+  filter: saturate(.82) contrast(1.04) brightness(1.12) sepia(.08);
+  transform: none;
+}
+
+/* Act 02 开发素材：真实手部与腰部靠右呈现，边缘渐隐到暖暗背景。 */
+.body-touch .touch-waist-img {
   opacity: 1;
-  mix-blend-mode: screen;
-  filter: saturate(1.04) contrast(1.06) brightness(1.06) sepia(.08);
+  mix-blend-mode: normal;
+  filter: none;
+  object-position: right center;
+  transform: none;
 }
 
 .shop-reveal .shop-material-img {
-  opacity: .96;
-  mix-blend-mode: screen;
-  filter: saturate(1) contrast(1.06) brightness(1.06) sepia(.1);
-  object-position: 58% 48%;
+  opacity: .94;
+  mix-blend-mode: normal;
+  filter: saturate(.9) contrast(1.04) brightness(.94) sepia(.06);
+  object-position: center;
+  transform: none;
 }
 
 /* 底部轻压暗：仅保证标签可读，不再做大幅暗角 */
 .body-touch .touch-lens::after {
-  background: linear-gradient(180deg, transparent 72%, rgba(35, 14, 18, .08) 100%);
+  z-index: 2;
+  background:
+    radial-gradient(ellipse 84% 90% at 64% 52%, transparent 54%, rgba(35, 14, 18, .26) 80%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, transparent 70%, rgba(35, 14, 18, .28) 88%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 94% at 62% 52%, #000 52%, rgba(0, 0, 0, .7) 74%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 94% at 62% 52%, #000 52%, rgba(0, 0, 0, .7) 74%, transparent 100%);
+}
+
+.body-touch .sensory-labels {
+  z-index: 3;
+  color: rgba(243, 236, 227, .82);
+  text-shadow: 0 1px 12px rgba(24, 10, 14, .9);
 }
 
 .shop-reveal .shop-visual-scrim {
   background:
-    linear-gradient(90deg, rgba(28, 11, 15, .04), transparent 28%, transparent 86%, rgba(28, 11, 15, .08)),
-    linear-gradient(180deg, rgba(28, 11, 15, .02), transparent 20%, transparent 84%, rgba(28, 11, 15, .08));
+    linear-gradient(90deg, transparent 0%, rgba(22, 16, 19, .86) 10%, rgba(22, 16, 19, .72) 20%, rgba(22, 16, 19, .18) 42%, transparent 60%, rgba(22, 16, 19, .16) 100%),
+    linear-gradient(180deg, rgba(22, 16, 19, .34), transparent 20%, transparent 80%, rgba(22, 16, 19, .5));
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, #000 10%, #000 94%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, .92) 8%, #000 18%, #000 78%, rgba(0, 0, 0, .78) 90%, transparent 100%);
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 10%, #000 94%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, .92) 8%, #000 18%, #000 78%, rgba(0, 0, 0, .78) 90%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* 首页最后一幕与页脚共享同一暗部，避免影像退场后出现横向切割线。 */
+.shop-reveal + .commerce-footer {
+  border-top: 0;
+  background: linear-gradient(180deg, rgba(44, 21, 27, .18) 0, var(--wine) 96px);
 }
 
 @media (max-width: 700px) {
-  .touch-lens img { object-position: 44% 42%; }
+  .touch-lens img { object-position: 54% 48%; }
 }
 
 /* --------------------------------------------------------------------------
@@ -1562,7 +1625,7 @@ main:focus { outline: none; }
   .eyebrow { margin-bottom: 12px; }
   .touch-copy > p:last-child, .want-copy > p:not(.eyebrow),
   .relationship-heading > p:last-child, .peak-body { margin-top: 14px; }
-  .touch-lens, .shop-visual { height: clamp(320px, 62vh, 540px); }
+  .touch-lens { height: clamp(320px, 62vh, 540px); }
   .want-copy { margin-top: 20px; }
   .wave-stage { height: 46%; }
 }
@@ -1599,21 +1662,14 @@ body::after {
 [data-act="06"]::before { left: 5%; top: 8%; }
 .scenes, .peak-section, .want-section { position: relative; }
 
-/* 幕间过渡：光的缝合线 —— 两幕边界不再是一根生硬横线，
-   而是一道横向渐变微光（中亮两侧暗），缓慢呼吸 + 一圈光晕，
-   像是光线从上一幕流淌进下一幕（reduced-motion 下保持静态可见） */
+/* 幕间过渡：用静态微光缝合章节，避免全页持续重绘。 */
 [data-act]::after {
   content: ""; position: absolute; top: -1px; left: 0; right: 0;
   height: 3px; z-index: 2;
   background: linear-gradient(90deg, transparent 4%, rgba(227, 169, 156, .34) 50%, transparent 96%);
   box-shadow: 0 0 26px -6px rgba(227, 169, 156, .4), 0 0 70px -18px rgba(227, 169, 156, .3);
   opacity: .7;
-  animation: seam-breathe 8s ease-in-out infinite alternate;
   pointer-events: none;
-}
-@keyframes seam-breathe {
-  from { opacity: .4; }
-  to { opacity: .95; }
 }
 
 /* 面板光边：顶部一条微光，提升材质感（商业卡片保留悬浮阴影） */
@@ -1644,24 +1700,10 @@ body::after {
 }
 .primary-button:hover::after { transform: translateX(130%); }
 
-/* 全局光线旅程：一束暖光随滚动贯穿六幕 —— 连续转场的核心 */
+/* 全局进度变量同时服务章节轨道与移动端章节入口。 */
 :root { --scroll-progress: 0; }
-body::before {
-  content: "";
-  position: fixed; inset: 0; z-index: 30;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  background:
-    radial-gradient(58% 42% at 50% calc(var(--scroll-progress) * 100%), rgba(232, 164, 140, .15), transparent 68%),
-    radial-gradient(34% 26% at 50% calc(var(--scroll-progress) * 100% + 16%), rgba(255, 150, 110, .09), transparent 65%);
-  animation: journey-breathe 11s ease-in-out infinite alternate;
-}
-@keyframes journey-breathe {
-  from { opacity: .7; }
-  to { opacity: 1; }
-}
 
-/* 暗部流动：site-shell 的背景光斑极慢漂移，让黑暗不是静止的 */
+/* 暗部以静态纵深承接六幕，运动只发生在用户正在观看的章节内。 */
 .site-shell {
   background:
     radial-gradient(900px 130% at 0% 50%, rgba(126, 47, 46, .16), transparent 70%),
@@ -1669,42 +1711,14 @@ body::before {
     radial-gradient(1100px 560px at 88% -12%, rgba(126, 47, 46, .17), transparent 62%),
     radial-gradient(820px 480px at -8% 32%, rgba(44, 21, 27, .5), transparent 64%),
     var(--night);
-  animation: shell-drift 26s ease-in-out infinite alternate;
-}
-@keyframes shell-drift {
-  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
-  to { background-position: 3% 0, -3% 0, 6% 4%, -4% -3%, 0 0; }
 }
 
-/* 呼吸：各面板光晕的缓慢起伏（微光脉动，非位移） */
-.touch-lens::after, .scene-visual::before {
-  animation: panel-breathe 7s ease-in-out infinite alternate;
-}
-@keyframes panel-breathe {
-  from { opacity: .78; }
-  to { opacity: 1; }
-}
-
-/* 章节导航（触发式）：静止态完全透明、不拦截指针，不遮挡背景、不挤压任何空间；
-   鼠标靠近右缘热区 / 悬停导航 / 键盘聚焦时才浮现（纯 fixed 悬浮） */
+/* 桌面章节导航：轨道常驻；列表从轨道左侧展开，始终留在视口内。 */
 .chapter-nav {
   position: fixed; right: clamp(8px, 1.2vw, 16px); top: 50%;
   transform: translateY(-50%);
   z-index: 40;
-  display: flex; align-items: center; gap: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .45s var(--ease);
-}
-.chapter-nav.is-visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-/* 触发热区：右缘 36px 隐形竖条，仅用于感知鼠标靠近 */
-.chapter-nav-zone {
-  position: fixed; top: 0; right: 0; bottom: 0;
-  width: 36px;
-  z-index: 39;
+  display: flex; align-items: center; gap: 7px;
 }
 /* 进度轨：1px 发丝线 + 六幕光点，当前幕高亮发光 */
 .chapter-nav__rail {
@@ -1730,17 +1744,15 @@ body::before {
   background: var(--flash);
   box-shadow: 0 0 12px 3px rgba(227, 169, 156, .55);
 }
-/* 悬浮展开态：毛玻璃面板从右缘滑入，浮于内容之上。
-   折叠时 max-width:0 + overflow:hidden 裁掉全部可点击区域（配合 nav 层 pointer-events:none 不拦截） */
+/* 列表位于轨道左侧，折叠时不留下不可见的点击区域。 */
 .chapter-nav__list {
   display: flex; flex-direction: column; gap: 2px;
   max-width: 0; overflow: hidden;
   opacity: 0;
-  transform: translateX(8px);
+  transform: translateX(10px);
   padding: 0;
   border-radius: 10px;
-  background: rgba(22, 16, 19, .58);
-  backdrop-filter: blur(14px) saturate(1.1); -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  background: rgba(22, 16, 19, .92);
   border: 1px solid rgba(243, 236, 227, .1);
   box-shadow: 0 14px 40px rgba(0, 0, 0, .38);
   transition: max-width .5s var(--ease), opacity .4s var(--ease),
@@ -1752,34 +1764,65 @@ body::before {
 }
 .chapter-nav__list button {
   display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px 8px 8px;
+  min-height: 42px;
+  padding: 8px 12px 8px 10px;
   white-space: nowrap;
   color: var(--muted); font-size: 11px; letter-spacing: .1em;
   opacity: .7; border-radius: 6px;
   transition: opacity .3s, color .3s, background .3s, padding-left .3s;
 }
-.chapter-nav__list button:hover { opacity: 1; color: var(--ivory); background: rgba(243, 236, 227, .06); padding-left: 12px; }
+.chapter-nav__list button:hover, .chapter-nav__list button:focus-visible { opacity: 1; color: var(--ivory); background: rgba(243, 236, 227, .06); }
 .chapter-nav__list button.is-active { opacity: 1; color: var(--flash); }
 .chapter-nav__list .chapter-nav__num { font-family: var(--font-display); font-size: 12px; }
 .chapter-nav__list .chapter-nav__name { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 
-/* 移动端：章节导航退成底部细线进度 + 当前章节痕迹 */
+/* 移动端：底部章节入口，点击展开六幕快捷跳转。 */
 .mobile-progress {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
-  height: 2px; background: rgba(243, 236, 227, .12);
+  position: fixed; left: 12px; right: 12px; bottom: 10px; z-index: 45;
+  height: 44px;
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  padding: 0 14px;
+  border: 1px solid rgba(243, 236, 227, .12);
+  border-radius: 999px;
+  background: rgba(22, 16, 19, .94);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .34);
 }
 .mobile-progress__fill {
-  display: block; height: 100%;
+  position: absolute; left: 10px; right: 10px; bottom: 0;
+  display: block; height: 1px;
   width: calc(var(--scroll-progress, 0) * 100%);
   background: linear-gradient(90deg, var(--cherry), var(--flash));
-  transition: width .1s linear;
+  max-width: calc(100% - 20px);
 }
 .mobile-progress__tag {
-  position: absolute; right: 14px; bottom: 10px;
-  font-size: 9px; letter-spacing: .22em; color: var(--muted);
+  font-size: 9px; letter-spacing: .22em; color: #c4b5ad;
 }
+.mobile-progress__mark { color: var(--flash); font-size: 14px; line-height: 1; }
+.mobile-chapter-sheet {
+  position: fixed; left: 12px; right: 12px; bottom: 62px; z-index: 44;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid rgba(243, 236, 227, .12);
+  border-radius: 16px;
+  background: #1f181b;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, .46);
+}
+.mobile-chapter-sheet button {
+  min-height: 48px;
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  color: var(--muted);
+  text-align: left;
+  font-size: 10px; letter-spacing: .08em;
+}
+.mobile-chapter-sheet button span { color: #c4b5ad; font-family: var(--font-display); }
+.mobile-chapter-sheet button.is-active { color: var(--flash); background: rgba(227, 169, 156, .08); }
+.chapter-sheet-enter-active, .chapter-sheet-leave-active { transition: opacity .24s ease, transform .32s var(--ease); }
+.chapter-sheet-enter-from, .chapter-sheet-leave-to { opacity: 0; transform: translateY(10px); }
 @media (min-width: 961px) { .mobile-progress { display: none; } }
-@media (max-width: 960px) { .chapter-nav, .chapter-nav-zone { display: none; } }
+@media (max-width: 960px) { .chapter-nav { display: none; } }
 
 /* --------------------------------------------------------------------------
    20. 动效偏好
@@ -1800,14 +1843,7 @@ body::before {
   .relationship-stage:hover .relationship-beam { left: 50%; }
   /* 感官标签与节奏引导不依赖 hover/动效：reduced-motion 下直接可见 */
   .sensory-labels span { opacity: 1; transform: none; }
-  .wave-stage i { height: calc(18px + var(--wave-index) * 9px); filter: none; }
-}
-
-/* 第六幕取景：人物上下多留一点呼吸，让背部与臀部从暗部若隐若现地出来。 */
-@media (min-width: 701px) {
-  .shop-visual {
-    height: min(82vh, 760px);
-  }
+  .wave-stage i { height: calc(18px + var(--wave-index) * 9px); opacity: 1; transform: none; }
 }
 
 @media (max-width: 700px) {
@@ -2020,59 +2056,17 @@ body::before {
 .shop-copy h2 { max-width: 9ch; }
 .shop-copy small { color: #b9aaa2; }
 
-/* 全局指针暖光：只做环境层，不覆盖内容、不拦截操作。 */
-.site-shell::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 29;
-  pointer-events: none;
-  opacity: var(--cursor-active, 0);
-  background: radial-gradient(ellipse 260px 220px at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(239, 170, 146, .12), transparent 72%);
-  mix-blend-mode: screen;
-  transition: opacity .6s ease;
-}
-
-.hero-bg,
-.touch-lens-img,
-.scene-img,
-.peak-visual-img,
-.want-visual-img,
-.shop-material-img {
-  will-change: transform, filter;
-}
-
-.hero-bg { filter: brightness(calc(.68 + var(--section-energy, 0) * .04)) saturate(calc(.74 + var(--section-energy, 0) * .1)) blur(5px); }
 .touch-lens::before { opacity: calc(.72 + var(--heat, 0) * .28); }
-.scene-visual::after { animation: scene-sweep 7s ease-in-out infinite alternate; }
-@keyframes scene-sweep {
-  from { transform: rotate(-18deg) translateX(-38%); opacity: .35; }
-  to { transform: rotate(-18deg) translateX(30%); opacity: .8; }
-}
 .scene-visual::after {
   background:
     radial-gradient(ellipse 180px 180px at var(--touch-x, 50%) var(--touch-y, 50%), rgba(255, 196, 166, .28), transparent 68%),
     linear-gradient(115deg, transparent 40%, rgba(240, 220, 200, .2) 50%, transparent 60%),
     radial-gradient(ellipse at 50% 50%, transparent 56%, rgba(22, 16, 19, .42) 100%);
+  opacity: .58;
+  transition: opacity .6s ease, transform 1.2s var(--ease);
 }
 .scene-visual.is-pulsing::after {
-  animation: scene-sweep 7s ease-in-out infinite alternate, touch-ripple .85s var(--ease) both;
-}
-@keyframes touch-ripple {
-  0% { background-size: 0 0, 100% 100%, 100% 100%; opacity: .45; }
-  55% { background-size: 420px 420px, 100% 100%, 100% 100%; opacity: 1; }
-  100% { background-size: 760px 760px, 100% 100%, 100% 100%; opacity: .4; }
-}
-
-.wave-stage {
-  --wave-scroll-energy: 0;
-}
-.wave-stage i {
-  height: calc((18px + var(--wave-index) * 9px) * (var(--wave-lift, 1) + var(--wave-scroll-energy, 0) * 1.8));
-  box-shadow: 0 0 calc(16px + var(--wave-scroll-energy, 0) * 18px) rgba(227, 169, 156, .35);
-}
-.wave-stage::after {
-  opacity: calc(.72 + var(--wave-scroll-energy, 0) * .28);
+  opacity: 1;
 }
 
 .want-visual::before {
@@ -2081,17 +2075,13 @@ body::before {
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(ellipse 260px 220px at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(255, 174, 140, calc(.12 + var(--want-energy, 0) * .18)), transparent 70%),
-    radial-gradient(ellipse 40% 60% at 50% 72%, rgba(255, 146, 112, calc(var(--want-energy, 0) * .2)), transparent 72%);
+    radial-gradient(ellipse 260px 220px at 58% 48%, rgba(255, 174, 140, .18), transparent 70%),
+    radial-gradient(ellipse 40% 60% at 50% 72%, rgba(255, 146, 112, .1), transparent 72%);
   mix-blend-mode: screen;
   pointer-events: none;
 }
 
-.shop-actions .primary-button { box-shadow: 0 0 0 rgba(227, 169, 156, 0); animation: cta-breathe 4.8s ease-in-out infinite; }
-@keyframes cta-breathe {
-  0%, 100% { box-shadow: 0 0 0 rgba(227, 169, 156, 0); }
-  50% { box-shadow: 0 0 34px rgba(227, 169, 156, .18); }
-}
+.shop-actions .primary-button { box-shadow: 0 0 0 rgba(227, 169, 156, 0); }
 .shop-actions .primary-button::before {
   content: "";
   position: absolute;
@@ -2105,32 +2095,18 @@ body::before {
 }
 .shop-actions .primary-button:hover::before,
 .shop-actions .primary-button:focus-visible::before { opacity: 1; transform: scale(1); }
-.want-embers span { animation-duration: 6s; }
-.want-embers span:nth-child(3n) { animation-delay: -1.8s; }
-.want-embers span:nth-child(2n) { animation-duration: 7.5s; }
-
 .chapter-nav__list button { transform: translateX(8px); }
-.chapter-nav__list.is-open button { animation: chapter-enter .5s var(--ease) both; }
-.chapter-nav__list.is-open button:nth-child(2) { animation-delay: .06s; }
-.chapter-nav__list.is-open button:nth-child(3) { animation-delay: .12s; }
-.chapter-nav__list.is-open button:nth-child(4) { animation-delay: .18s; }
-.chapter-nav__list.is-open button:nth-child(5) { animation-delay: .24s; }
-.chapter-nav__list.is-open button:nth-child(6) { animation-delay: .3s; }
-@keyframes chapter-enter { to { transform: translateX(0); } }
+.chapter-nav__list.is-open button { transform: translateX(0); transition: transform .4s var(--ease), opacity .3s, color .3s, background .3s; }
 
 @media (max-width: 700px) {
-  .site-shell::after { opacity: 0; }
   .touch-lens .lens-ring { width: clamp(110px, 28vw, 160px); }
-  .scene-visual.is-pulsing::after { animation-duration: .7s; }
-  .shop-actions .primary-button { animation-duration: 6s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .site-shell::after,
   .shop-actions .primary-button,
   .scene-visual::after,
   .scene-visual.is-pulsing::after,
-  .chapter-nav__list.is-open button { animation: none; transition: none; }
+  .chapter-nav__list.is-open button { transition: none; }
   .shop-actions .primary-button::before { display: none; }
 }
 .chapter-nav__rail::after {

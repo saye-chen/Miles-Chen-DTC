@@ -40,7 +40,7 @@ export function useDustParticles(canvas: Ref<HTMLCanvasElement | null>, host: Re
   function resize() {
     const el = canvas.value
     if (!el) return
-    const ratio = window.devicePixelRatio || 1
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.5)
     const rect = el.getBoundingClientRect()
     w = rect.width
     h = rect.height
@@ -93,7 +93,7 @@ export function useDustParticles(canvas: Ref<HTMLCanvasElement | null>, host: Re
       ctx.fillStyle = `rgba(232, 196, 178, ${alpha.toFixed(3)})`
       if (!lowEnd) {
         ctx.shadowColor = 'rgba(230, 170, 150, .9)'
-        ctx.shadowBlur = 6 + breathe * 8
+        ctx.shadowBlur = 4 + breathe * 4
       }
       ctx.fill()
     }
@@ -115,7 +115,7 @@ export function useDustParticles(canvas: Ref<HTMLCanvasElement | null>, host: Re
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     resize()
     const mobile = window.matchMedia('(max-width: 700px)').matches
-    const particleCount = lowEnd ? Math.min(count, 12) : mobile ? Math.min(count, 24) : count
+    const particleCount = lowEnd ? Math.min(count, 10) : mobile ? Math.min(count, 14) : count
     particles = Array.from({ length: particleCount }, spawn)
     window.addEventListener('resize', resize)
     start()

@@ -16,10 +16,8 @@ const label = computed(() => language.value === 'zh' ? {
 
 const visual = ref<HTMLElement | null>(null)
 const dust = ref<HTMLCanvasElement | null>(null)
-const pulse = ref<HTMLCanvasElement | null>(null)
 useTouchField(visual)
-usePulseCanvas(pulse)
-useDustParticles(dust, visual, 42)
+useDustParticles(dust, visual, 20)
 
 /** 标题拆成"行 > 视觉单元"：中文逐字、英文逐词（含空格占位），SSR 直接渲染 */
 const units = computed(() => props.copy.title.split('\n').map(line =>
@@ -47,7 +45,6 @@ const units = computed(() => props.copy.title.split('\n').map(line =>
       />
       <div class="hero-scrim" aria-hidden="true"></div>
       <canvas ref="dust" class="hero-dust" aria-hidden="true"></canvas>
-      <canvas ref="pulse" class="hero-pulse" aria-hidden="true"></canvas>
       <span class="hero-label">黑暗 / DARKNESS</span>
     </div>
     <div class="hero-copy">

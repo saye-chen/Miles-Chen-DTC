@@ -3,14 +3,14 @@ const { language } = useSiteLanguage()
 
 const copy = computed(() => language.value === 'zh' ? {
   eyebrow: '02 / 看见体温',
-  title: '黑暗里，\n温度先亮起来。',
-  body: '你还没有触碰它，你已经感觉到了它。',
+  title: '身体知道，\n先于语言。',
+  body: '你还没有触碰它，\n身体已经感觉到了温度。\n\n那是一点停顿，\n也是一个正在靠近的答案。',
   lens: '热源 / HEAT SOURCE',
   senses: ['温度', '柔软', '在场'],
 } : {
   eyebrow: '02 / Your body answers first',
   title: 'Your body knows\nbefore you do.',
-  body: 'You feel it before you name it.',
+  body: 'You feel it before you name it.\n\nA warmth. A pause.\nA quiet answer waiting beneath the skin.\n\nBefore thought arrives, the body has already moved closer.',
   lens: 'HEAT SOURCE',
   senses: ['WARMTH', 'SOFTNESS', 'PRESENCE'],
 })
@@ -27,16 +27,21 @@ useTouchField(lens)
       <h2 id="body-touch-title" class="art-title">
         <span class="t-line" v-for="(ln, i) in copy.title.split('\n')" :key="i">{{ ln }}</span>
       </h2>
-      <p>{{ copy.body }}</p>
+      <p class="touch-body-copy">
+        <template v-for="(line, i) in copy.body.split('\n')" :key="i">
+          <br v-if="i > 0 && line === ''" aria-hidden="true" />
+          <span v-else>{{ line }}</span>
+          <br v-if="line !== ''" aria-hidden="true" />
+        </template>
+      </p>
     </div>
 
     <div ref="lens" class="touch-lens" data-reveal>
       <SitePicture
-        src="/images/journey/skin-touch-v2.png"
+        src="/images/journey/originals/unsplash-hand-waist-original.jpg"
         :alt="language === 'zh' ? '黑暗中，手掌沿着温暖的皮肤与身体曲线停留' : 'A hand resting along warm skin and a curved body in the dark'"
         sizes="(max-width: 700px) 92vw, 54vw"
-        parallax="0.08"
-        img-class="touch-lens-img"
+        img-class="touch-lens-img touch-waist-img"
       />
       <div class="lens-ring" aria-hidden="true"></div>
       <span class="touch-label">{{ copy.lens }}</span>
