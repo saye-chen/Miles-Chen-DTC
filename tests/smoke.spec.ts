@@ -55,6 +55,111 @@ test.describe('首页', () => {
     await expect(page.locator('.commerce-footer')).toBeVisible()
   })
 
+  test('移动端：02—06 幕文字进入全幅影像舞台且不横向溢出', async ({ page }) => {
+    const viewport = page.viewportSize()
+    test.skip(viewport && viewport.width > 700, '沉浸式章节舞台仅手机断点（≤700px）生效')
+    await page.goto('/', { waitUntil: 'networkidle' })
+
+    const layout = await page.evaluate(() => {
+      const pairs = [
+        ['02', '.body-touch', '.touch-copy', '.touch-lens'],
+        ['03', '.scenes', '.scene-copy', '.scene-visual'],
+        ['04', '.peak-section', '.peak-copy', '.peak-visual'],
+        ['05', '.want-section', '.want-copy', '.want-visual'],
+        ['06', '.shop-reveal', '.shop-copy', '.shop-visual'],
+      ] as const
+
+      const items = pairs.map(([act, sectionSelector, copySelector, visualSelector]) => {
+        const section = document.querySelector<HTMLElement>(sectionSelector)!
+        const copy = document.querySelector<HTMLElement>(copySelector)!
+        const visual = document.querySelector<HTMLElement>(visualSelector)!
+        const picture = visual.querySelector<HTMLElement>('.site-picture')!
+        const heading = copy.querySelector<HTMLElement>('h2')!
+        const headingStyle = getComputedStyle(heading)
+        const explicitLines = [...heading.querySelectorAll<HTMLElement>('.t-line')]
+        const sectionRect = section.getBoundingClientRect()
+        const copyRect = copy.getBoundingClientRect()
+        const visualRect = visual.getBoundingClientRect()
+        const pictureRect = picture.getBoundingClientRect()
+        const pictureStyle = getComputedStyle(picture)
+        const overlapWidth = Math.max(0, Math.min(copyRect.right, visualRect.right) - Math.max(copyRect.left, visualRect.left))
+        const overlapHeight = Math.max(0, Math.min(copyRect.bottom, visualRect.bottom) - Math.max(copyRect.top, visualRect.top))
+        const copyArea = Math.max(1, copyRect.width * copyRect.height)
+        return {
+          act,
+          sectionHeight: sectionRect.height,
+          copyLeft: copyRect.left,
+          copyRight: copyRect.right,
+          visualLeft: visualRect.left,
+          visualRight: visualRect.right,
+          visualRadius: getComputedStyle(visual).borderRadius,
+          pictureHeightRatio: pictureRect.height / sectionRect.height,
+          pictureMask: pictureStyle.maskImage !== 'none' ? pictureStyle.maskImage : pictureStyle.webkitMaskImage,
+          overlapRatio: (overlapWidth * overlapHeight) / copyArea,
+          headingFontSize: Number.parseFloat(headingStyle.fontSize),
+          headingLineHeight: Number.parseFloat(headingStyle.lineHeight),
+          headingLineCount: heading.getBoundingClientRect().height / Number.parseFloat(headingStyle.lineHeight),
+          explicitLineCounts: explicitLines.map((line) => {
+            const lineHeight = Number.parseFloat(getComputedStyle(line).lineHeight)
+            return line.getBoundingClientRect().height / lineHeight
+          }),
+        }
+      })
+
+      return {
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        items,
+      }
+    })
+
+    expect(layout.overflow).toBeLessThanOrEqual(1)
+    for (const item of layout.items) {
+      expect(item.sectionHeight, `${item.act} 幕高度`).toBeGreaterThanOrEqual(Math.min(layout.viewportHeight, 680))
+      expect(item.copyLeft, `${item.act} 幕文案左缘`).toBeGreaterThanOrEqual(0)
+      expect(item.copyRight, `${item.act} 幕文案右缘`).toBeLessThanOrEqual(layout.viewportWidth + 1)
+      expect(item.visualLeft, `${item.act} 幕影像左缘`).toBeLessThanOrEqual(0)
+      expect(item.visualRight, `${item.act} 幕影像右缘`).toBeGreaterThanOrEqual(layout.viewportWidth)
+      expect(item.visualRadius, `${item.act} 幕影像圆角`).toBe('0px')
+      expect(item.overlapRatio, `${item.act} 幕图文重叠比例`).toBeGreaterThan(.9)
+      if (item.act === '02') {
+        expect(item.pictureHeightRatio, '02 幕竖幅素材保持整屏').toBeGreaterThan(.95)
+      } else {
+        expect(item.pictureHeightRatio, `${item.act} 幕横幅素材使用独立影像场`).toBeGreaterThan(.5)
+        expect(item.pictureHeightRatio, `${item.act} 幕横幅素材避免过度纵向裁切`).toBeLessThan(.65)
+        expect(item.pictureMask, `${item.act} 幕影像边缘融入暗场`).not.toBe('none')
+      }
+      expect(item.headingFontSize, `${item.act} 幕手机标题字号`).toBeLessThanOrEqual(56)
+      expect(item.headingLineCount, `${item.act} 幕标题总行数`).toBeLessThanOrEqual(2.2)
+      for (const lineCount of item.explicitLineCounts) {
+        if (item.act !== '04') {
+          expect(lineCount, `${item.act} 幕语义断句不得二次折行`).toBeLessThanOrEqual(1.2)
+        }
+      }
+    }
+
+    await page.locator('.language-button').click()
+    const chineseLayout = await page.evaluate(() => {
+      const selectors = ['.body-touch h2', '.scenes h2', '.peak-section h2', '.want-section h2', '.shop-reveal h2']
+      return {
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+        headings: selectors.map((selector) => {
+          const heading = document.querySelector<HTMLElement>(selector)!
+          const style = getComputedStyle(heading)
+          return {
+            selector,
+            lineCount: heading.getBoundingClientRect().height / Number.parseFloat(style.lineHeight),
+          }
+        }),
+      }
+    })
+    expect(chineseLayout.overflow).toBeLessThanOrEqual(1)
+    for (const heading of chineseLayout.headings) {
+      expect(heading.lineCount, `${heading.selector} 中文标题总行数`).toBeLessThanOrEqual(2.2)
+    }
+  })
+
   test('首屏影像铺满视口：右缘与下缘无留白', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' })
     const box = await page.locator('.hero-bg').evaluate((el) => {
