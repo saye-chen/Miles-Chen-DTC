@@ -2163,3 +2163,529 @@ body::after {
     padding-bottom: clamp(56px, 8vh, 96px);
   }
 }
+
+/* --------------------------------------------------------------------------
+   26. 首页 · 移动端沉浸式章节舞台
+   --------------------------------------------------------------------------
+   仅在手机断点生效：02—06 幕维持“文字入画”的连续叙事，但不再把
+   横向素材强行裁成同一种整屏比例。每幕拥有独立影像场、焦点与文案落点，
+   图片边缘消隐进暗场，桌面构图保持不变。
+*/
+@media (max-width: 700px) {
+  .body-touch,
+  .scenes,
+  .peak-section,
+  .want-section,
+  .shop-reveal {
+    position: relative;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  }
+
+  .body-touch,
+  .shop-reveal { padding-inline: 0; }
+
+  .body-touch { min-height: max(760px, 100svh); }
+  .scenes,
+  .peak-section,
+  .want-section { min-height: max(680px, 100svh); }
+  .shop-reveal { min-height: max(820px, 100svh); }
+
+  .body-touch > .touch-copy,
+  .body-touch > .touch-lens,
+  .scenes > .scene-copy,
+  .scenes > .scene-visual,
+  .peak-section > .peak-copy,
+  .peak-section > .peak-visual,
+  .peak-section > .wave-stage,
+  .want-section > .want-copy,
+  .want-section > .want-visual,
+  .shop-reveal > .shop-copy,
+  .shop-reveal > .shop-visual {
+    grid-area: 1 / 1;
+  }
+
+  .touch-lens,
+  .scene-visual,
+  .peak-visual,
+  .want-visual,
+  .shop-visual {
+    position: relative;
+    inset: auto;
+    align-self: stretch;
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    margin: 0;
+    aspect-ratio: auto;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .touch-lens .site-picture,
+  .scene-visual .site-picture,
+  .peak-visual .site-picture,
+  .want-visual .site-picture,
+  .shop-visual .site-picture {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .touch-copy,
+  .scene-copy,
+  .peak-copy,
+  .want-copy,
+  .shop-copy {
+    position: relative;
+    inset: auto;
+    z-index: 3;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    text-shadow: 0 3px 24px rgba(8, 4, 7, .78);
+  }
+
+  /* 手机不是桌面的缩小版：重新建立眉题、标题、正文三层字阶与行长。 */
+  .body-touch .eyebrow,
+  .scenes .eyebrow,
+  .peak-section .eyebrow,
+  .want-section .eyebrow,
+  .shop-reveal .eyebrow {
+    max-width: calc(100% - 16px);
+    margin-bottom: 14px;
+    font-size: 8.5px;
+    line-height: 1.45;
+    letter-spacing: .24em;
+  }
+
+  .body-touch h2,
+  .scenes h2,
+  .peak-section h2,
+  .want-section h2,
+  .shop-reveal h2 {
+    text-wrap: balance;
+    letter-spacing: -.035em;
+  }
+
+  .body-touch .t-line,
+  .scenes .t-line,
+  .shop-reveal .t-line {
+    width: fit-content;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .touch-copy::before,
+  .scene-copy::before,
+  .peak-copy::before,
+  .shop-copy::before {
+    inset: -18% -10% -22%;
+    background: radial-gradient(ellipse at 32% 48%, rgba(10, 5, 8, .58), transparent 72%);
+    filter: blur(10px);
+  }
+
+  .body-touch .touch-copy {
+    align-self: start;
+    justify-self: stretch;
+    padding: 112px clamp(20px, 5.5vw, 26px) 104px;
+  }
+
+  .body-touch .touch-copy h2 {
+    max-width: 100%;
+    font-size: clamp(2.2rem, 10.2vw, 2.72rem);
+    line-height: .98;
+  }
+
+  .body-touch .touch-body-copy {
+    max-width: 27ch;
+    margin-top: clamp(24px, 4.8vh, 42px);
+    color: rgba(243, 236, 227, .78);
+    font-size: clamp(12.5px, 3.45vw, 13.5px);
+    line-height: 1.55;
+  }
+
+  .body-touch .touch-lens {
+    z-index: 0;
+    background: #211317;
+  }
+
+  .body-touch .touch-lens img {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: 56% center;
+    opacity: 1;
+    mix-blend-mode: normal;
+    filter: saturate(.84) contrast(1.06) brightness(1.02) sepia(.08);
+  }
+
+  .body-touch .touch-lens::before {
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: calc(.58 + var(--heat, 0) * .24);
+  }
+
+  .body-touch .touch-lens::after {
+    z-index: 2;
+    background:
+      linear-gradient(90deg, rgba(18, 9, 13, .86) 0%, rgba(18, 9, 13, .56) 44%, rgba(18, 9, 13, .06) 76%, rgba(18, 9, 13, .18) 100%),
+      linear-gradient(180deg, rgba(18, 9, 13, .46) 0%, transparent 30%, transparent 62%, rgba(18, 9, 13, .58) 100%);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .touch-label {
+    top: 92px;
+    right: 20px;
+    z-index: 4;
+  }
+
+  .sensory-labels {
+    display: none;
+  }
+
+  .sensory-labels span {
+    opacity: .62;
+    transform: none;
+    font-size: 8px;
+  }
+
+  .scenes .scene-visual {
+    z-index: 0;
+    aspect-ratio: auto;
+    background:
+      radial-gradient(90% 54% at 66% 42%, rgba(105, 35, 32, .34), transparent 72%),
+      #160d11;
+  }
+
+  .scenes .scene-visual .site-picture {
+    position: absolute;
+    top: 15%;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    min-height: 0;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 11%, #000 80%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 11%, #000 80%, transparent 100%);
+  }
+
+  .scenes .scene-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 61% 54%;
+    opacity: .9;
+    filter: saturate(.66) contrast(1.08) brightness(.82) sepia(.1) hue-rotate(-4deg);
+  }
+
+  .scenes .scene-visual::before {
+    background:
+      linear-gradient(180deg, rgba(18, 9, 13, .7) 0%, transparent 25%, transparent 56%, rgba(18, 9, 13, .96) 82%),
+      linear-gradient(90deg, rgba(18, 9, 13, .6) 0%, rgba(18, 9, 13, .14) 62%, rgba(18, 9, 13, .2) 100%);
+  }
+
+  .scenes .scene-visual > span {
+    top: 92px;
+    right: 20px;
+  }
+
+  .scenes .scene-copy {
+    align-self: end;
+    justify-self: stretch;
+    padding: 0 clamp(20px, 5.5vw, 26px) 172px;
+  }
+
+  .scenes .scene-copy h2 {
+    max-width: 100%;
+    font-size: clamp(2.35rem, 10.8vw, 2.9rem);
+    line-height: .96;
+  }
+
+  .scenes .scene-copy > p:last-child {
+    max-width: 100%;
+    margin-top: 12px;
+    color: rgba(243, 236, 227, .8);
+    font-size: clamp(12.5px, 3.45vw, 13.5px);
+    line-height: 1.5;
+  }
+
+  .peak-section .peak-visual {
+    z-index: 0;
+    opacity: 1;
+    mix-blend-mode: normal;
+    background:
+      radial-gradient(88% 48% at 64% 56%, rgba(111, 50, 45, .32), transparent 76%),
+      #170e12;
+  }
+
+  .peak-section .peak-visual .site-picture {
+    position: absolute;
+    top: 24%;
+    left: 0;
+    width: 100%;
+    height: 58%;
+    min-height: 0;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 13%, #000 82%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 13%, #000 82%, transparent 100%);
+  }
+
+  .peak-section .peak-visual-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% 48%;
+    opacity: .82;
+    filter: saturate(.7) contrast(1.08) brightness(.78) sepia(.08);
+  }
+
+  .peak-section .peak-visual::after {
+    background:
+      linear-gradient(180deg, rgba(18, 9, 13, .9) 0%, rgba(18, 9, 13, .12) 39%, rgba(18, 9, 13, .86) 100%),
+      linear-gradient(90deg, rgba(18, 9, 13, .72) 0%, rgba(18, 9, 13, .12) 64%, rgba(18, 9, 13, .32) 100%);
+  }
+
+  .peak-section .peak-copy {
+    align-self: start;
+    justify-self: stretch;
+    padding: 112px clamp(20px, 5.5vw, 26px) 0;
+    text-align: left;
+    transform: none;
+  }
+
+  .peak-section .peak-copy h2 {
+    max-width: 100%;
+    margin: 0;
+    font-size: clamp(2.38rem, 10.8vw, 2.92rem);
+    line-height: .97;
+  }
+
+  html:not(:lang(zh-CN)) .peak-section .peak-copy h2 {
+    max-width: 6.5ch;
+  }
+
+  html:not(:lang(zh-CN)) .peak-section .peak-copy .t-line {
+    white-space: normal;
+  }
+
+  .peak-section .peak-copy .peak-body {
+    max-width: 26ch;
+    margin: 14px 0 0;
+    font-size: clamp(12.5px, 3.45vw, 13.5px);
+    line-height: 1.5;
+  }
+
+  .peak-section .wave-stage {
+    position: relative;
+    inset: auto;
+    z-index: 2;
+    align-self: end;
+    justify-self: stretch;
+    width: auto;
+    height: 36%;
+    margin: 0 16px 92px;
+    gap: 4px;
+  }
+
+  .peak-section .wave-stage i {
+    width: 2px;
+  }
+
+  .peak-section .wave-hint {
+    position: absolute;
+    left: 20px;
+    right: auto;
+    bottom: 140px;
+    transform: none;
+    width: auto;
+    margin: 0;
+    color: rgba(243, 236, 227, .68);
+    font-size: 8px;
+    letter-spacing: .2em;
+  }
+
+  .want-section .want-visual {
+    z-index: 0;
+    opacity: 1;
+    background:
+      radial-gradient(82% 46% at 50% 34%, rgba(119, 51, 46, .28), transparent 74%),
+      #160d11;
+  }
+
+  .want-section .want-visual .site-picture {
+    position: absolute;
+    top: 10%;
+    left: 0;
+    width: 100%;
+    height: 54%;
+    min-height: 0;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 78%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 78%, transparent 100%);
+  }
+
+  .want-section .want-visual-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 48%;
+    opacity: .9;
+    mix-blend-mode: normal;
+    filter: saturate(.72) contrast(1.1) brightness(.76) sepia(.1);
+  }
+
+  .want-section .want-visual::after {
+    background:
+      linear-gradient(180deg, rgba(18, 9, 13, .72) 0%, rgba(18, 9, 13, .08) 32%, rgba(18, 9, 13, .2) 58%, rgba(18, 9, 13, .94) 79%),
+      radial-gradient(ellipse at 50% 40%, rgba(18, 9, 13, .02) 0%, rgba(18, 9, 13, .58) 84%);
+  }
+
+  .want-section .want-copy {
+    align-self: end;
+    justify-self: stretch;
+    padding: 0 clamp(20px, 5.5vw, 26px) 178px;
+    text-align: center;
+    transform: none;
+  }
+
+  .want-section .want-copy h2 {
+    max-width: 7ch;
+    margin-inline: auto;
+    font-size: clamp(2.66rem, 12.2vw, 3.3rem);
+    line-height: .96;
+    letter-spacing: -.045em;
+  }
+
+  .want-section .want-copy > p:not(.eyebrow) {
+    max-width: 26ch;
+    margin: 14px auto 0;
+    font-size: clamp(12.5px, 3.45vw, 13.5px);
+    line-height: 1.5;
+  }
+
+  .shop-reveal .shop-visual {
+    z-index: 0;
+    background:
+      radial-gradient(86% 54% at 68% 46%, rgba(108, 46, 43, .32), transparent 76%),
+      #160d11;
+  }
+
+  .shop-reveal .shop-visual .site-picture {
+    position: absolute;
+    top: 21%;
+    left: 0;
+    width: 100%;
+    height: 54%;
+    min-height: 0;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 83%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 9%, #000 83%, transparent 100%);
+  }
+
+  .shop-reveal .shop-material-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 65% 48%;
+    opacity: .94;
+    filter: saturate(.82) contrast(1.04) brightness(.82) sepia(.06);
+  }
+
+  .shop-reveal .shop-visual-scrim {
+    background:
+      linear-gradient(90deg, rgba(18, 9, 13, .96) 0%, rgba(18, 9, 13, .82) 46%, rgba(18, 9, 13, .2) 78%, rgba(18, 9, 13, .34) 100%),
+      linear-gradient(180deg, rgba(18, 9, 13, .76) 0%, rgba(18, 9, 13, .04) 35%, rgba(18, 9, 13, .18) 64%, rgba(18, 9, 13, .94) 100%);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .shop-reveal .shop-visual-label {
+    top: 92px;
+    right: 20px;
+    z-index: 4;
+  }
+
+  .shop-reveal .shop-copy {
+    align-self: start;
+    justify-self: stretch;
+    padding: 108px clamp(20px, 5.5vw, 26px) 106px;
+  }
+
+  .shop-reveal .shop-copy h2 {
+    max-width: 100%;
+    font-size: clamp(2.18rem, 10.1vw, 2.7rem);
+    line-height: .97;
+  }
+
+  .shop-reveal .shop-copy .shop-lead {
+    max-width: 27ch;
+    margin: 13px 0 0;
+    color: rgba(243, 236, 227, .8);
+    font-size: clamp(12.5px, 3.45vw, 13.5px);
+    line-height: 1.5;
+  }
+
+  .shop-reveal .shop-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .shop-reveal .shop-actions .primary-button {
+    width: min(100%, 270px);
+    min-height: 52px;
+    padding-inline: 22px;
+  }
+
+  .shop-reveal .shop-actions .ghost-button {
+    width: min(100%, 198px);
+    min-height: 50px;
+    padding-inline: 20px;
+  }
+
+  .shop-reveal .shop-copy small {
+    max-width: 32ch;
+    margin-top: 12px;
+    color: rgba(243, 236, 227, .62);
+    font-size: 9.5px;
+    line-height: 1.5;
+  }
+
+  /* 中英文采用不同字面节奏：中文略松，避免沿用拉丁字母的负字距。 */
+  html:lang(zh-CN) .body-touch h2,
+  html:lang(zh-CN) .scenes h2,
+  html:lang(zh-CN) .peak-section h2,
+  html:lang(zh-CN) .want-section h2,
+  html:lang(zh-CN) .shop-reveal h2 {
+    line-height: 1.08;
+    letter-spacing: .015em;
+  }
+
+  html:lang(zh-CN) .want-section .want-copy h2 {
+    max-width: 100%;
+  }
+
+  html:lang(zh-CN) .body-touch .touch-body-copy,
+  html:lang(zh-CN) .scenes .scene-copy > p:last-child,
+  html:lang(zh-CN) .peak-section .peak-body,
+  html:lang(zh-CN) .want-section .want-copy > p:not(.eyebrow),
+  html:lang(zh-CN) .shop-reveal .shop-lead {
+    line-height: 1.68;
+  }
+
+  .mobile-progress {
+    bottom: max(10px, env(safe-area-inset-bottom));
+  }
+}
